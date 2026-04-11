@@ -47,21 +47,20 @@ function envoyer(type) {
     return;
   }
 
+  const data = new URLSearchParams();
+  data.append("nom", nom);
+  data.append("type", type);
+
   fetch(URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      nom: nom,
-      type: type
-    })
+    body: data
   })
-  .then(res => res.json())
-  .then(data => {
+  .then(res => res.text()) // ⚠️ pas json()
+  .then(() => {
     document.getElementById("message").innerText = "Pointage enregistré ✔️";
   })
   .catch(err => {
+    console.error(err);
     document.getElementById("message").innerText = "Erreur ❌";
   });
 }
