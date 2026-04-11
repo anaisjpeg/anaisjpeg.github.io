@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pointage ADIL</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      padding: 15px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    input {
+      padding: 10px;
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Pointage</h2>
+
+<input type="text" id="nom" placeholder="Votre nom">
+
+<br>
+
+<button onclick="envoyer('arrivee')">Arrivée</button>
+<button onclick="envoyer('depart')">Départ</button>
+<button onclick="envoyer('exterieur')">Mission extérieure</button>
+
+<p id="message"></p>
+
+<script>
+const URL = "COLLE_TON_URL_APPS_SCRIPT_ICI";
+
+function envoyer(type) {
+  const nom = document.getElementById("nom").value;
+
+  if (!nom) {
+    alert("Entrez votre nom");
+    return;
+  }
+
+  fetch(URL, {
+    method: "POST",
+    body: JSON.stringify({
+      nom: nom,
+      type: type
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("message").innerText = "Pointage enregistré ✔️";
+  })
+  .catch(err => {
+    document.getElementById("message").innerText = "Erreur ❌";
+  });
+}
+</script>
+
+</body>
+</html>
