@@ -49,6 +49,9 @@ function envoyer(type) {
 
   fetch(URL, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       nom: nom,
       type: type
