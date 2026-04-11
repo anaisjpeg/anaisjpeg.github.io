@@ -47,22 +47,18 @@ function envoyer(type) {
     return;
   }
 
-  const data = new URLSearchParams();
-  data.append("nom", nom);
-  data.append("type", type);
+  const url = URL
+    + "?nom=" + encodeURIComponent(nom)
+    + "&type=" + encodeURIComponent(type);
 
-  fetch(URL, {
-    method: "POST",
-    body: data
-  })
-  .then(res => res.text()) // ⚠️ pas json()
-  .then(() => {
-    document.getElementById("message").innerText = "Pointage enregistré ✔️";
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("message").innerText = "Erreur ❌";
-  });
+  fetch(url)
+    .then(() => {
+      document.getElementById("message").innerText = "Pointage enregistré ✔️";
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById("message").innerText = "Erreur ❌";
+    });
 }
 </script>
 
