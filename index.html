@@ -79,7 +79,7 @@ button:hover {
 
   <h2>Pointage</h2>
 
-  <!-- Nom (liste ou manuel) -->
+  <!-- Nom -->
   <select id="nom">
     <option value="">Choisir votre nom</option>
     <option>Anaïs</option>
@@ -96,11 +96,11 @@ button:hover {
   </select>
 
   <!-- Commentaire -->
-  <input type="text" id="commentaire" placeholder="Commentaire (optionnel)">
+  <input type="text" id="commentaire" placeholder="Commentaire (facultatif)">
 
   <div>
-    <button class="arrivee" onclick="envoyer('arrivee')">Arrivée</button>
-    <button class="depart" onclick="envoyer('depart')">Départ</button>
+    <button class="arrivee" onclick="envoyer('arrivee')">Début travail</button>
+    <button class="depart" onclick="envoyer('depart')">Fin travail</button>
   </div>
 
   <p id="message"></p>
@@ -135,7 +135,7 @@ function envoyer(type) {
 
   fetch(url)
     .then(() => {
-      document.getElementById("message").innerText = "✔️ Pointage enregistré";
+      document.getElementById("message").innerText = "✅ Pointage enregistré";
       document.getElementById("commentaire").value = "";
     })
     .catch(() => {
