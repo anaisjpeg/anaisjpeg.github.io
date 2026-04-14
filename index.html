@@ -1,65 +1,140 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Pointage ADIL</title>
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      margin-top: 50px;
-    }
-    button {
-      padding: 15px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    input {
-      padding: 10px;
-      margin: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Pointage ADIL</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9f5f0;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 400px;
+  margin: 80px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.logo {
+  max-width: 120px;
+  margin-bottom: 15px;
+}
+
+h2 {
+  color: #575756;
+  margin-bottom: 20px;
+}
+
+input, select {
+  width: 90%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  width: 45%;
+  padding: 12px;
+  margin: 10px 5px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  color: white;
+}
+
+.arrivee {
+  background-color: #ED6A32;
+}
+
+.depart {
+  background-color: #575756;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+#message {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #ED6A32;
+}
+</style>
 </head>
 
 <body>
 
-<h2>Pointage</h2>
+<div class="container">
 
-<input type="text" id="nom" placeholder="Votre nom">
+  <img src="logo.png" class="logo">
 
-<br>
+  <h2>Pointage ADIL</h2>
 
-<button onclick="envoyer('arrivee')">Arrivée</button>
-<button onclick="envoyer('depart')">Départ</button>
-<button onclick="envoyer('exterieur')">Mission extérieure</button>
+  <!-- Nom (liste ou manuel) -->
+  <select id="nom">
+    <option value="">Choisir votre nom</option>
+    <option>Anaïs</option>
+    <option>Julie</option>
+    <option>Paul</option>
+  </select>
 
-<p id="message"></p>
+  <!-- Commentaire -->
+  <input type="text" id="commentaire" placeholder="Commentaire (optionnel)">
+
+  <div>
+    <button class="arrivee" onclick="envoyer('arrivee')">Arrivée</button>
+    <button class="depart" onclick="envoyer('depart')">Départ</button>
+  </div>
+
+  <p id="message"></p>
+
+</div>
 
 <script>
+
 const URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
+
+/* 🔹 Garder le nom en mémoire */
+window.onload = () => {
+  const saved = localStorage.getItem("nom");
+  if (saved) document.getElementById("nom").value = saved;
+};
 
 function envoyer(type) {
   const nom = document.getElementById("nom").value;
+  const commentaire = document.getElementById("commentaire").value;
 
   if (!nom) {
-    alert("Entrez votre nom");
+    alert("Entrez votre prénom");
     return;
   }
 
+  localStorage.setItem("nom", nom);
+
   const url = URL
     + "?nom=" + encodeURIComponent(nom)
-    + "&type=" + encodeURIComponent(type);
+    + "&type=" + encodeURIComponent(type)
+    + "&commentaire=" + encodeURIComponent(commentaire);
 
   fetch(url)
     .then(() => {
-      document.getElementById("message").innerText = "Pointage enregistré ✔️";
+      document.getElementById("message").innerText = "✔️ Pointage enregistré";
+      document.getElementById("commentaire").value = "";
     })
-    .catch(err => {
-      console.error(err);
-      document.getElementById("message").innerText = "Erreur ❌";
+    .catch(() => {
+      document.getElementById("message").innerText = "❌ Erreur";
     });
 }
+
 </script>
 
 </body>
