@@ -88,6 +88,7 @@ button:hover {
 #message {
   margin-top: 15px;
   line-height: 1.6;
+  font-weight: bold;
   color: #ED6A32;
 }
 </style>
@@ -147,21 +148,17 @@ function envoyer(type) {
     
       if (type === "debut") {
         message = `
-          <div style="font-weight:bold;">
-            ✅ Pointage enregistré
-          </div>
-          <div color:#575756;">
+          ✅ Pointage enregistré<br><br>
+          <span style="color:#575756cc; font-weight:normal;">
             Bonne journée ${nom} 😊
-          </div>
+          </span>
         `;
       } else if (type === "fin") {
         message = `
-          <div style="color:#575756; font-weight:bold;">
-            ✅ Pointage enregistré
-          </div>
-          <div style="margin-top:10px;">
+          ✅ Pointage enregistré<br><br>
+          <span style="color:#575756; font-weight:normal;">
             Bonne soirée ${nom} 😁
-          </div>
+          </span>
         `;
       }
     
@@ -183,7 +180,7 @@ function afficherMessage(msg) {
 
   setTimeout(() => {
     el.innerHTML = "";
-  }, 5000); // 5 secondes
+  }, 7000); // 7 secondes
 }
 
 function chargerEmployes() {
