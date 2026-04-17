@@ -86,8 +86,8 @@ button:hover {
 }
 
 #message {
-  margin-top: 10px;
-  line-height: 1.6;
+  margin-top: 15px;
+  line-height: 1.3;
   font-weight: bold;
   color: #ED6A32;
 }
@@ -148,17 +148,17 @@ function envoyer(type) {
     
       if (type === "debut") {
         message = `
-          ✅ Pointage enregistré<br><br>
-          <span style="color:#575756;">
+          <div>✅ Pointage enregistré</div>
+          <div style="margin-top:10px; color:#575756; font-weight:normal;">
             Bonne journée ${nom} 😊
-          </span>
+          </div>
         `;
       } else if (type === "fin") {
         message = `
-          ✅ Pointage enregistré<br><br>
-          <span style="color:#575756;">
+          <div>✅ Pointage enregistré</div>
+          <div style="margin-top:10px; color:#575756; font-weight:normal;">
             Bonne soirée ${nom} 😁
-          </span>
+          </div>
         `;
       }
     
