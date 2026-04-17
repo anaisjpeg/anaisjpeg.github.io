@@ -143,7 +143,15 @@ function envoyer(type) {
 
   fetch(url)
     .then(() => {
-      afficherMessage("✅ Pointage enregistré");
+      let message = "";
+    
+      if (type === "debut") {
+        message = "✅ Pointage enregistré \n Bonne journée ${nom} 😊";
+      } else if (type === "fin") {
+        message = "✅ Pointage enregistré \n Bonne soirée ${nom} 😁";
+      }
+    
+      afficherMessage(message);
       document.getElementById("commentaire").value = "";
     })
     .catch(() => {
