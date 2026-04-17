@@ -182,6 +182,13 @@ function chargerEmployes() {
       });
     });
 }
+
+window.onload = () => {
+  chargerEmployes();
+
+  const saved = localStorage.getItem("nom");
+  if (saved) document.getElementById("nom").value = saved;
+};
   
 </script>
 
