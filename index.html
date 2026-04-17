@@ -212,6 +212,19 @@ function chargerEmployesAPI() {
       console.error("Erreur chargement employés", err);
     });
 }
+
+function updateSelect(data) {
+  const select = document.getElementById("nom");
+
+  select.innerHTML = '<option value="">Choisir votre nom</option>';
+
+  data.forEach(e => {
+    const option = document.createElement("option");
+    option.value = e[0];
+    option.textContent = e[0];
+    select.appendChild(option);
+  });
+}
   
 </script>
 
