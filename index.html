@@ -87,7 +87,7 @@ button:hover {
 
 #message {
   margin-top: 15px;
-  font-weight: bold;
+  line-height: 1.6;
   color: #ED6A32;
 }
 </style>
@@ -146,9 +146,23 @@ function envoyer(type) {
       let message = "";
     
       if (type === "debut") {
-        message = `✅ Pointage enregistré \n Bonne journée ${nom} 😊`;
+        message = `
+          <div style="font-weight:bold;">
+            ✅ Pointage enregistré
+          </div>
+          <div color:#575756;">
+            Bonne journée ${nom} 😊
+          </div>
+        `;
       } else if (type === "fin") {
-        message = `✅ Pointage enregistré \n Bonne soirée ${nom} 😁`;
+        message = `
+          <div style="color:#575756; font-weight:bold;">
+            ✅ Pointage enregistré
+          </div>
+          <div style="margin-top:10px;">
+            Bonne soirée ${nom} 😁
+          </div>
+        `;
       }
     
       afficherMessage(message);
@@ -165,10 +179,10 @@ function envoyer(type) {
 
 function afficherMessage(msg) {
   const el = document.getElementById("message");
-  el.innerText = msg;
+  el.innerHTML = msg;
 
   setTimeout(() => {
-    el.innerText = "";
+    el.innerHTML = "";
   }, 5000); // 5 secondes
 }
 
