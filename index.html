@@ -185,11 +185,33 @@ function chargerEmployes() {
 }
 
 window.onload = () => {
-  chargerEmployes();
+  chargerEmployesCache(); // instantané
+  chargerEmployesAPI();   // mise à jour en fond
 
   const saved = localStorage.getItem("nom");
   if (saved) document.getElementById("nom").value = saved;
 };
+
+function chargerEmployesCache() {
+  const cached = localStorage.getItem("employes");
+
+  if (cached) {
+    const data = JSON.parse(cached);
+    updateSelect(data);
+  }
+}
+
+function chargerEmployesAPI() {
+  fetch(URL + "?action=getEmployes")
+    .then(res => res.json())
+    .then(data => {
+      localStorage.setItem("employes", JSON.stringify(data));
+      updateSelect(data);
+    })
+    .catch(err => {
+      console.error("Erreur chargement employés", err);
+    });
+}
   
 </script>
 
