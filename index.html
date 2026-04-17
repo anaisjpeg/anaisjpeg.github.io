@@ -100,23 +100,8 @@ button:hover {
 
   <h2>Pointage</h2>
 
-  <!-- Nom -->
-  <select id="nom">
-    <option value="">Choisir votre nom</option>
-    <option>Anaïs</option>
-    <option>Cloé</option>
-    <option>Delphine</option>
-    <option>Elsa</option>
-    <option>Frédéric</option>
-    <option>Julia</option>
-    <option>Mélissa</option>
-    <option>Thibaut</option>
-    <option>Thomas</option>
-    <option>Valentin</option>
-    <option>Véronique</option>
-  </select>
+  <select id="nom"></select>
 
-  <!-- Commentaire -->
   <input type="text" id="commentaire" placeholder="Commentaire (facultatif)">
 
   <div>
@@ -180,6 +165,22 @@ function afficherMessage(msg) {
   setTimeout(() => {
     el.innerText = "";
   }, 5000); // 5 secondes
+}
+
+function chargerEmployes() {
+  fetch(URL + "?action=getEmployes")
+    .then(res => res.json())
+    .then(data => {
+      const select = document.getElementById("nom");
+      select.innerHTML = '<option value="">Choisir votre nom</option>';
+
+      data.forEach(e => {
+        const option = document.createElement("option");
+        option.value = e[0];
+        option.textContent = e[0];
+        select.appendChild(option);
+      });
+    });
 }
   
 </script>
