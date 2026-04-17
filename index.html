@@ -118,11 +118,6 @@ button:hover {
 
 const URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
 
-/* 🔹 Garder le nom en mémoire */
-window.onload = () => {
-  const saved = localStorage.getItem("nom");
-  if (saved) document.getElementById("nom").value = saved;
-};
 
 function envoyer(type) {
   const nom = document.getElementById("nom").value;
@@ -139,6 +134,7 @@ function envoyer(type) {
   spinner.style.display = "block";
 
   localStorage.setItem("nom", nom);
+  document.getElementById("nom").value = nom;
 
   const url = URL
     + "?nom=" + encodeURIComponent(nom)
@@ -185,11 +181,15 @@ function chargerEmployes() {
 }
 
 window.onload = () => {
-  chargerEmployesCache(); // instantané
-  chargerEmployesAPI();   // mise à jour en fond
+  chargerEmployesCache();
+  chargerEmployesAPI();
 
   const saved = localStorage.getItem("nom");
-  if (saved) document.getElementById("nom").value = saved;
+  if (saved) {
+    setTimeout(() => {
+      document.getElementById("nom").value = saved;
+    }, 100);
+  }
 };
 
 function chargerEmployesCache() {
@@ -216,12 +216,19 @@ function chargerEmployesAPI() {
 function updateSelect(data) {
   const select = document.getElementById("nom");
 
+  const currentValue = select.value || localStorage.getItem("nom");
+
   select.innerHTML = '<option value="">Choisir votre nom</option>';
 
   data.forEach(e => {
     const option = document.createElement("option");
     option.value = e[0];
     option.textContent = e[0];
+
+    if (e[0] === currentValue) {
+      option.selected = true;
+    }
+
     select.appendChild(option);
   });
 }
