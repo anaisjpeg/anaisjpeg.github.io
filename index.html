@@ -102,7 +102,15 @@ button:hover {
 
   <h2>Pointage</h2>
 
-  <select id="nom"></select>
+  <select id="nom">
+    <option value="">Choisir votre nom</option>
+    <option>Anaïs</option> <option>Cloé</option>
+    <option>Delphine</option> <option>Elsa</option>
+    <option>Frédéric</option> <option>Julia</option>
+    <option>Mélissa</option> <option>Thibaut</option>
+    <option>Thomas</option> <option>Valentin</option>
+    <option>Véronique</option>
+  </select>
 
   <input type="text" id="commentaire" placeholder="Commentaire (facultatif)">
 
@@ -181,75 +189,6 @@ function afficherMessage(msg) {
   setTimeout(() => {
     el.innerHTML = "";
   }, 7000); // 7 secondes
-}
-
-function chargerEmployes() {
-  fetch(URL + "?action=getEmployes")
-    .then(res => res.json())
-    .then(data => {
-      const select = document.getElementById("nom");
-      select.innerHTML = '<option value="">Choisir votre nom</option>';
-
-      data.forEach(e => {
-        const option = document.createElement("option");
-        option.value = e[0];
-        option.textContent = e[0];
-        select.appendChild(option);
-      });
-    });
-}
-
-window.onload = () => {
-  chargerEmployesCache();
-  chargerEmployesAPI();
-
-  const saved = localStorage.getItem("nom");
-  if (saved) {
-    setTimeout(() => {
-      document.getElementById("nom").value = saved;
-    }, 100);
-  }
-};
-
-function chargerEmployesCache() {
-  const cached = localStorage.getItem("employes");
-
-  if (cached) {
-    const data = JSON.parse(cached);
-    updateSelect(data);
-  }
-}
-
-function chargerEmployesAPI() {
-  fetch(URL + "?action=getEmployes")
-    .then(res => res.json())
-    .then(data => {
-      localStorage.setItem("employes", JSON.stringify(data));
-      updateSelect(data);
-    })
-    .catch(err => {
-      console.error("Erreur chargement employés", err);
-    });
-}
-
-function updateSelect(data) {
-  const select = document.getElementById("nom");
-
-  const currentValue = select.value || localStorage.getItem("nom");
-
-  select.innerHTML = '<option value="">Choisir votre nom</option>';
-
-  data.forEach(e => {
-    const option = document.createElement("option");
-    option.value = e[0];
-    option.textContent = e[0];
-
-    if (e[0] === currentValue) {
-      option.selected = true;
-    }
-
-    select.appendChild(option);
-  });
 }
   
 </script>
