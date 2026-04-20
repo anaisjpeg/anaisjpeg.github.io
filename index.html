@@ -127,6 +127,10 @@ button:hover {
 
 const URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
 
+window.onload = () => {
+  const saved = localStorage.getItem("nom");
+  if (saved) document.getElementById("nom").value = saved;
+};
 
 function envoyer(type) {
   const nom = document.getElementById("nom").value;
