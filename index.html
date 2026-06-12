@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pointage ADIL</title>
-
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -13,36 +12,71 @@ body {
   padding: 0;
 }
 
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  max-width: 400px;
+  margin: 30px auto 0;
+  border-radius: 15px 15px 0 0;
+  overflow: hidden;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+}
+.tab-btn {
+  flex: 1;
+  padding: 14px;
+  background: #ede8e2;
+  border: none;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.tab-btn.active {
+  background: white;
+  color: #ED6A32;
+}
+
+/* ── Container ── */
 .container {
   max-width: 400px;
-  margin: 80px auto;
+  margin: 0 auto 40px;
   background: white;
   padding: 30px;
-  border-radius: 15px;
+  border-radius: 0 0 15px 15px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.1);
   text-align: center;
 }
 
+/* ── Sections ── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── Logo & titre ── */
 .logo {
   max-width: 120px;
   margin-bottom: 15px;
 }
-
 h2 {
   color: #575756;
   margin-bottom: 20px;
 }
 
-input, select {
+/* ── Inputs originaux ── */
+input[type="text"], select {
   width: 90%;
   padding: 12px;
   margin: 10px 0;
   border-radius: 8px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
 }
 
-button {
+/* ── Boutons pointage originaux ── */
+.btn-pointage {
   width: 45%;
   padding: 12px;
   margin: 10px 5px;
@@ -51,21 +85,14 @@ button {
   font-size: 16px;
   cursor: pointer;
   color: white;
+  font-family: Arial, sans-serif;
 }
+.btn-pointage:hover { opacity: 0.9; }
+.btn-pointage:disabled { opacity: 0.5; cursor: default; }
+.debut { background-color: #ED6A32; }
+.fin   { background-color: #575756; }
 
-.debut {
-  background-color: #ED6A32;
-}
-
-.fin {
-  background-color: #575756;
-}
-  
-.loading {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
+/* ── Spinner original ── */
 .spinner {
   border: 4px solid #f3f3f3;
   border-top: 4px solid #ED6A32;
@@ -76,126 +103,463 @@ button {
   margin: 10px auto;
   display: none;
 }
+@keyframes spin { 100% { transform: rotate(360deg); } }
 
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-  
-button:hover {
-  opacity: 0.9;
-}
-
+/* ── Message original ── */
 #message {
   margin-top: 15px;
   line-height: 1.3;
   font-weight: bold;
   color: #ED6A32;
 }
+
+/* ── Onglet Mon compte : composants dans le même style ── */
+.compte-section-title {
+  color: #575756;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 20px 0 8px;
+  text-align: left;
+}
+.compte-section-title:first-child { margin-top: 0; }
+
+/* Solde */
+.solde-bloc {
+  background: #f9f5f0;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.solde-valeur {
+  font-size: 32px;
+  font-weight: bold;
+  color: #575756;
+}
+.solde-label {
+  font-size: 13px;
+  color: #999;
+  margin-top: 2px;
+}
+.solde-alerte {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #ED6A32;
+}
+
+/* Semaines */
+.semaine-item {
+  border: 2px solid #e0d9d2;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 6px 0;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+.semaine-item:hover { border-color: #ED6A32; }
+.semaine-item.selected {
+  border-color: #ED6A32;
+  background: #fdf3ee;
+}
+.sem-titre  { font-weight: bold; font-size: 14px; color: #575756; }
+.sem-detail { font-size: 12px; color: #999; margin-top: 2px; }
+
+/* Radio contrepartie */
+.radio-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 6px 0 10px;
+}
+.radio-opt {
+  border: 2px solid #e0d9d2;
+  border-radius: 8px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  color: #999;
+  transition: all 0.2s;
+}
+.radio-opt:hover { border-color: #ED6A32; }
+.radio-opt.selected {
+  border-color: #ED6A32;
+  color: #ED6A32;
+  background: #fdf3ee;
+}
+.radio-opt span { display: block; font-size: 20px; margin-bottom: 4px; }
+
+/* Saisie récup */
+.recup-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 6px 0;
+}
+.recup-row label {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 4px;
+  font-weight: bold;
+  text-align: left;
+}
+.recup-row input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  text-align: center;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+/* Bouton principal compte */
+.btn-compte {
+  width: 90%;
+  padding: 13px;
+  margin: 12px 0 4px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  background-color: #ED6A32;
+  font-family: Arial, sans-serif;
+  transition: opacity 0.2s;
+}
+.btn-compte:hover    { opacity: 0.9; }
+.btn-compte:disabled { opacity: 0.5; cursor: default; }
+
+/* Loading texte */
+.chargement {
+  color: #999;
+  font-size: 14px;
+  padding: 16px 0;
+}
+
+/* Message compte */
+#message-compte {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #ED6A32;
+  font-size: 14px;
+  min-height: 20px;
+}
 </style>
 </head>
-
 <body>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('pointage')">⏱ Pointage</button>
+  <button class="tab-btn"        onclick="switchTab('compte')">👤 Mon compte</button>
+</div>
 
 <div class="container">
 
-  <img src="logo.png" class="logo">
+  <!-- ══ ONGLET POINTAGE ══════════════════════════════════════ -->
+  <div class="section active" id="tab-pointage">
+    <img src="logo.png" class="logo">
+    <h2>Pointage</h2>
 
-  <h2>Pointage</h2>
+    <select id="nom">
+      <option value="">Choisir votre nom</option>
+      <option>Anaïs</option>
+      <option>Cloé</option>
+      <option>Delphine</option>
+      <option>Elsa</option>
+      <option>Frédéric</option>
+      <option>Julia</option>
+      <option>Mélissa</option>
+      <option>Thibaut</option>
+      <option>Thomas</option>
+      <option>Valentin</option>
+      <option>Véronique</option>
+    </select>
 
-  <select id="nom">
-    <option value="">Choisir votre nom</option>
-    <option>Anaïs</option> <option>Cloé</option>
-    <option>Delphine</option> <option>Elsa</option>
-    <option>Frédéric</option> <option>Julia</option>
-    <option>Mélissa</option> <option>Thibaut</option>
-    <option>Thomas</option> <option>Valentin</option>
-    <option>Véronique</option>
-  </select>
+    <input type="text" id="commentaire" placeholder="Commentaire (facultatif)">
 
-  <input type="text" id="commentaire" placeholder="Commentaire (facultatif)">
+    <div>
+      <button class="btn-pointage debut" onclick="envoyer('debut')">Début du travail</button>
+      <button class="btn-pointage fin"   onclick="envoyer('fin')">Fin du travail</button>
+    </div>
 
-  <div>
-    <button class="debut" onclick="envoyer('debut')">Début du travail</button>
-    <button class="fin" onclick="envoyer('fin')">Fin du travail</button>
+    <p id="message"></p>
+    <div id="spinner" class="spinner"></div>
   </div>
 
-  <p id="message"></p>
-  <div id="spinner" class="spinner"></div>
-</div>
+  <!-- ══ ONGLET MON COMPTE ════════════════════════════════════ -->
+  <div class="section" id="tab-compte">
+    <h2>Mon compte</h2>
+
+    <!-- Sélection prénom -->
+    <select id="nom-compte">
+      <option value="">Choisir votre nom</option>
+      <option>Anaïs</option>
+      <option>Cloé</option>
+      <option>Delphine</option>
+      <option>Elsa</option>
+      <option>Frédéric</option>
+      <option>Julia</option>
+      <option>Mélissa</option>
+      <option>Thibaut</option>
+      <option>Thomas</option>
+      <option>Valentin</option>
+      <option>Véronique</option>
+    </select>
+
+    <button class="btn-compte" onclick="chargerCompte()">Voir mon solde</button>
+
+    <!-- Contenu chargé dynamiquement -->
+    <div id="compte-content" style="display:none">
+
+      <!-- Solde repos -->
+      <div class="compte-section-title" style="margin-top:22px">Solde de repos cumulé</div>
+      <div class="solde-bloc">
+        <div class="solde-valeur" id="solde-valeur">—</div>
+        <div class="solde-label">heures à poser</div>
+        <div class="solde-alerte" id="solde-alerte"></div>
+      </div>
+
+      <!-- Semaines avec dépassement -->
+      <div class="compte-section-title">Semaines avec dépassement</div>
+      <div id="semaine-list"><div class="chargement">Chargement…</div></div>
+
+      <!-- Formulaire contrepartie (affiché après sélection d'une semaine) -->
+      <div id="form-contrepartie" style="display:none">
+
+        <div class="compte-section-title">Contrepartie choisie</div>
+        <div class="radio-group">
+          <div class="radio-opt" id="opt-repos"    onclick="selectContrepartie('Repos')">
+            <span>😴</span>Repos
+          </div>
+          <div class="radio-opt" id="opt-paiement" onclick="selectContrepartie('Paiement')">
+            <span>💶</span>Paiement
+          </div>
+        </div>
+
+        <!-- Récup prises (visible seulement si Repos) -->
+        <div id="bloc-recup" style="display:none">
+          <div class="compte-section-title">Récupérations déjà prises cette semaine</div>
+          <div class="recup-row">
+            <div>
+              <label>Heures</label>
+              <input type="number" id="recup-h" min="0" max="23" value="0">
+            </div>
+            <div>
+              <label>Minutes</label>
+              <input type="number" id="recup-m" min="0" max="59" value="0">
+            </div>
+          </div>
+        </div>
+
+        <input type="text" id="recup-comment" placeholder="Commentaire (facultatif)" style="width:90%">
+        <button class="btn-compte" onclick="enregistrerRecup()">Enregistrer</button>
+
+      </div><!-- /form-contrepartie -->
+
+    </div><!-- /compte-content -->
+
+    <p id="message-compte"></p>
+    <div id="spinner-compte" class="spinner"></div>
+
+  </div><!-- /tab-compte -->
+
+</div><!-- /container -->
 
 <script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
 
-const URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
+// ── État ───────────────────────────────────────────────────────
+let _semaines              = [];
+let semaineSelectionnee    = null;
+let contrepartieChoisie    = null;
 
+// ── Tabs ───────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll(".tab-btn").forEach((b, i) => {
+    b.classList.toggle("active", (i === 0) === (tab === "pointage"));
+  });
+  document.getElementById("tab-pointage").classList.toggle("active", tab === "pointage");
+  document.getElementById("tab-compte").classList.toggle("active",   tab === "compte");
+}
+
+// ── Mémoire prénom ─────────────────────────────────────────────
 window.onload = () => {
   const saved = localStorage.getItem("nom");
-  if (saved) document.getElementById("nom").value = saved;
+  if (saved) {
+    document.getElementById("nom").value        = saved;
+    document.getElementById("nom-compte").value = saved;
+  }
 };
 
+// ══ POINTAGE ══════════════════════════════════════════════════
 function envoyer(type) {
-  const nom = document.getElementById("nom").value;
+  const nom         = document.getElementById("nom").value;
   const commentaire = document.getElementById("commentaire").value;
-  const buttons = document.querySelectorAll("button");
+  if (!nom) { alert("Choisissez votre nom"); return; }
+
+  const buttons = document.querySelectorAll(".btn-pointage");
   const spinner = document.getElementById("spinner");
-
-  if (!nom) {
-    alert("Entrez votre prénom");
-    return;
-  }
-
   buttons.forEach(b => b.disabled = true);
   spinner.style.display = "block";
-
   localStorage.setItem("nom", nom);
-  document.getElementById("nom").value = nom;
 
-  const url = URL
-    + "?nom=" + encodeURIComponent(nom)
-    + "&type=" + encodeURIComponent(type)
+  const url = SCRIPT_URL
+    + "?action=pointage"
+    + "&nom="         + encodeURIComponent(nom)
+    + "&type="        + encodeURIComponent(type)
     + "&commentaire=" + encodeURIComponent(commentaire);
 
   fetch(url)
     .then(() => {
-      let message = "";
-    
-      if (type === "debut") {
-        message = `
-          <div>✅ Pointage enregistré</div>
-          <div style="margin-top:10px; color:#575756; font-weight:normal;">
-            Bonne journée ${nom} 😊
-          </div>
-        `;
-      } else if (type === "fin") {
-        message = `
-          <div>✅ Pointage enregistré</div>
-          <div style="margin-top:10px; color:#575756; font-weight:normal;">
-            Bonne soirée ${nom} 😁
-          </div>
-        `;
-      }
-    
-      afficherMessage(message);
+      const msg = type === "debut"
+        ? `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bonne journée ${nom} 😊</div>`
+        : `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bonne soirée ${nom} 😁</div>`;
+      afficherMessage("message", msg);
       document.getElementById("commentaire").value = "";
     })
-    .catch(() => {
-      afficherMessage("❌ Erreur");
-    })
+    .catch(() => afficherMessage("message", "❌ Erreur réseau"))
     .finally(() => {
       buttons.forEach(b => b.disabled = false);
       spinner.style.display = "none";
     });
 }
 
-function afficherMessage(msg) {
-  const el = document.getElementById("message");
-  el.innerHTML = msg;
+// ══ MON COMPTE ════════════════════════════════════════════════
 
-  setTimeout(() => {
-    el.innerHTML = "";
-  }, 7000); // 7 secondes
+// Chargement solde + semaines
+async function chargerCompte() {
+  const nom = document.getElementById("nom-compte").value;
+  if (!nom) { alert("Choisissez votre nom"); return; }
+
+  localStorage.setItem("nom", nom);
+  document.getElementById("nom").value = nom;
+
+  document.getElementById("compte-content").style.display  = "none";
+  document.getElementById("form-contrepartie").style.display = "none";
+  document.getElementById("message-compte").innerHTML = "";
+  document.getElementById("spinner-compte").style.display  = "block";
+
+  try {
+    // Solde
+    const soldeRes  = await fetch(`${SCRIPT_URL}?action=getSolde&nom=${encodeURIComponent(nom)}`);
+    const soldeData = await soldeRes.json();
+    document.getElementById("solde-valeur").textContent  = soldeData.soldeH || "0h00";
+    document.getElementById("solde-alerte").textContent  =
+      soldeData.alerte ? "⚠️ Seuil 7h atteint — à poser dans les 2 mois" : "";
+
+    // Semaines
+    const semRes  = await fetch(`${SCRIPT_URL}?action=getSemaines&nom=${encodeURIComponent(nom)}`);
+    const semData = await semRes.json();
+    _semaines = semData.semaines || [];
+    afficherSemaines();
+
+    document.getElementById("compte-content").style.display = "block";
+  } catch {
+    afficherMessage("message-compte", "❌ Erreur de chargement");
+  } finally {
+    document.getElementById("spinner-compte").style.display = "none";
+  }
 }
-  
-</script>
 
+// Affichage liste des semaines
+function afficherSemaines() {
+  const list = document.getElementById("semaine-list");
+  if (_semaines.length === 0) {
+    list.innerHTML = '<div class="chargement">Aucun dépassement enregistré.</div>';
+    return;
+  }
+  list.innerHTML = _semaines.map((s, i) => `
+    <div class="semaine-item" id="sem-${i}" onclick="selectSemaine(${i})">
+      <div class="sem-titre">${s.semaine} — ${s.type}</div>
+      <div class="sem-detail">Total : ${s.totalH} · Dépassement : ${s.depassementH}</div>
+    </div>
+  `).join("");
+}
+
+// Sélection d'une semaine
+function selectSemaine(idx) {
+  document.querySelectorAll(".semaine-item").forEach(el => el.classList.remove("selected"));
+  document.getElementById(`sem-${idx}`).classList.add("selected");
+
+  semaineSelectionnee = _semaines[idx];
+  contrepartieChoisie = null;
+
+  document.getElementById("opt-repos").classList.remove("selected");
+  document.getElementById("opt-paiement").classList.remove("selected");
+  document.getElementById("bloc-recup").style.display     = "none";
+  document.getElementById("form-contrepartie").style.display = "block";
+  document.getElementById("recup-comment").value          = "";
+  document.getElementById("recup-h").value                = "0";
+  document.getElementById("recup-m").value                = "0";
+}
+
+// Choix de la contrepartie
+function selectContrepartie(val) {
+  contrepartieChoisie = val;
+  document.getElementById("opt-repos").classList.toggle("selected",    val === "Repos");
+  document.getElementById("opt-paiement").classList.toggle("selected", val === "Paiement");
+  document.getElementById("bloc-recup").style.display = (val === "Repos") ? "block" : "none";
+}
+
+// Enregistrement
+async function enregistrerRecup() {
+  const nom = document.getElementById("nom-compte").value;
+  if (!nom || !semaineSelectionnee || !contrepartieChoisie) {
+    alert("Sélectionnez une semaine et un type de contrepartie.");
+    return;
+  }
+
+  const h        = parseInt(document.getElementById("recup-h").value || "0", 10);
+  const m        = parseInt(document.getElementById("recup-m").value || "0", 10);
+  const recupMin = (contrepartieChoisie === "Repos") ? h * 60 + m : 0;
+  const comment  = document.getElementById("recup-comment").value.trim();
+
+  document.getElementById("spinner-compte").style.display = "block";
+
+  try {
+    const url = SCRIPT_URL
+      + "?action=recup"
+      + "&nom="          + encodeURIComponent(nom)
+      + "&semaine="      + encodeURIComponent(semaineSelectionnee.lundi)
+      + "&contrepartie=" + encodeURIComponent(contrepartieChoisie)
+      + "&recupMin="     + recupMin
+      + "&commentaire="  + encodeURIComponent(comment);
+
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (data.ok) {
+      afficherMessage("message-compte", "✅ Enregistré");
+      document.getElementById("form-contrepartie").style.display = "none";
+      // Recharger le solde
+      chargerCompte();
+    } else {
+      afficherMessage("message-compte", "❌ Erreur : " + (data.error || "inconnue"));
+    }
+  } catch {
+    afficherMessage("message-compte", "❌ Erreur réseau");
+  } finally {
+    document.getElementById("spinner-compte").style.display = "none";
+  }
+}
+
+// ── Utilitaire message ──────────────────────────────────────────
+function afficherMessage(id, msg) {
+  const el = document.getElementById(id);
+  el.innerHTML = msg;
+  setTimeout(() => { el.innerHTML = ""; }, 7000);
+}
+</script>
 </body>
 </html>
