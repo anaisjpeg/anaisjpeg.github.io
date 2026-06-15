@@ -360,19 +360,9 @@ input[type="text"], select {
           </div>
 
           <div id="bloc-recup" style="display:none">
-            <div style="font-size:12px;font-weight:bold;color:#aaa;margin-bottom:6px;
-                        text-transform:uppercase;letter-spacing:0.5px">
-              Récupérations déjà prises cette semaine
+            <div style="font-size:11px;color:#aaa;margin-bottom:10px;text-align:center">
+              Le repos acquis sera ajouté à votre solde et à poser dans les 2 mois dès 7h cumulées.
             </div>
-            <div class="recup-row">
-              <div><label>Heures</label>
-                <input type="number" id="recup-h" min="0" max="23" value="0"
-                  oninput="validerRecup()"></div>
-              <div><label>Minutes</label>
-                <input type="number" id="recup-m" min="0" max="59" value="0"
-                  oninput="validerRecup()"></div>
-            </div>
-            <div class="recup-plafond" id="recup-plafond"></div>
           </div>
 
           <input type="text" id="recup-comment" class="input-comment"
@@ -396,7 +386,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamI
 let _semaines           = [];
 let semaineSelectionnee = null;
 let contrepartieChoisie = null;
-let reposAcquisMinCourant = 0; // plafond pour la saisie récup
+
 
 // ── Tabs ───────────────────────────────────────────────────────
 function switchTab(tab) {
@@ -484,8 +474,8 @@ function afficherSemaines() {
     const solde  = hasDep && !s.contrepartie;
 
     let badgeClass = "badge-ok",    badgeTxt = "Régulier";
-    if (solde)   { badgeClass = "badge-alerte"; badgeTxt = s.type + " – à déclarer"; }
-    else if (hasDep) { badgeClass = "badge-dep"; badgeTxt = s.type + " · " + s.reposAcquisH; }
+    if (solde)       { badgeClass = "badge-alerte"; badgeTxt = s.type + " – à déclarer"; }
+    else if (hasDep) { badgeClass = "badge-dep";    badgeTxt = s.type + " · " + s.reposBrutH; }
 
     let cardClass = "semaine-card";
     if (solde)   cardClass += " has-dep non-solde";
@@ -519,7 +509,7 @@ function afficherSemaines() {
             <div class="stat-lbl">dépassement</div>
           </div>
           <div class="stat-item">
-            <div class="stat-val">${s.reposAcquisH}</div>
+            <div class="stat-val">${s.reposBrutH}</div>
             <div class="stat-lbl">repos acquis</div>
           </div>` : ""}
         </div>
@@ -536,24 +526,22 @@ function selectSemaine(idx) {
 
   semaineSelectionnee     = _semaines[idx];
   contrepartieChoisie     = semaineSelectionnee.contrepartie || null;
-  reposAcquisMinCourant   = semaineSelectionnee.reposAcquisMin || 0;
 
   // Réinitialiser le formulaire
   document.getElementById("opt-repos").classList.toggle("selected",    contrepartieChoisie === "Repos");
   document.getElementById("opt-paiement").classList.toggle("selected", contrepartieChoisie === "Paiement");
   document.getElementById("bloc-recup").style.display =
     contrepartieChoisie === "Repos" ? "block" : "none";
-  document.getElementById("recup-h").value       = "0";
-  document.getElementById("recup-m").value       = "0";
   document.getElementById("recup-comment").value = "";
-  majPlafond();
 
+  const dejaDeclare = !!semaineSelectionnee.contrepartie;
   document.getElementById("form-titre").textContent =
-    semaineSelectionnee.depassementMin > 0
-      ? "Déclarer ma contrepartie — " + semaineSelectionnee.semaine
-      : "Semaine sans dépassement";
+    semaineSelectionnee.depassementMin <= 0 ? "Semaine sans dépassement"
+    : dejaDeclare ? "Contrepartie déjà déclarée : " + semaineSelectionnee.contrepartie
+    : "Déclarer ma contrepartie — " + semaineSelectionnee.semaine;
+  // Afficher le formulaire seulement s'il y a dépassement ET pas encore déclaré
   document.getElementById("form-contrepartie").style.display =
-    semaineSelectionnee.depassementMin > 0 ? "block" : "none";
+    (semaineSelectionnee.depassementMin > 0 && !dejaDeclare) ? "block" : "none";
 
   // Scroll vers le formulaire
   setTimeout(() => {
@@ -567,32 +555,9 @@ function selectContrepartie(val) {
   document.getElementById("opt-repos").classList.toggle("selected",    val === "Repos");
   document.getElementById("opt-paiement").classList.toggle("selected", val === "Paiement");
   document.getElementById("bloc-recup").style.display = val === "Repos" ? "block" : "none";
-  majPlafond();
 }
 
-// ── Plafond récup ──────────────────────────────────────────────
-function validerRecup() {
-  let h = parseInt(document.getElementById("recup-h").value || "0", 10);
-  let m = parseInt(document.getElementById("recup-m").value || "0", 10);
-  const totalSaisi = h * 60 + m;
-  if (totalSaisi > reposAcquisMinCourant) {
-    // Recalcul : plafonner
-    const plafH = Math.floor(reposAcquisMinCourant / 60);
-    const plafM = reposAcquisMinCourant % 60;
-    document.getElementById("recup-h").value = plafH;
-    document.getElementById("recup-m").value = plafM;
-  }
-  majPlafond();
-}
-
-function majPlafond() {
-  const el = document.getElementById("recup-plafond");
-  if (!el) return;
-  const h = Math.floor(reposAcquisMinCourant / 60);
-  const m = reposAcquisMinCourant % 60;
-  const hhmm = h + "h" + String(m).padStart(2, "0");
-  el.innerHTML = "Maximum à poser pour cette semaine : <strong>" + hhmm + "</strong>";
-}
+// plafond récup supprimé (champ h/m retiré du formulaire)
 
 // ── Enregistrement ─────────────────────────────────────────────
 async function enregistrerRecup() {
@@ -601,12 +566,9 @@ async function enregistrerRecup() {
     alert("Sélectionnez une semaine et un type de contrepartie.");
     return;
   }
-  let h = parseInt(document.getElementById("recup-h").value || "0", 10);
-  let m = parseInt(document.getElementById("recup-m").value || "0", 10);
-  let recupMin = contrepartieChoisie === "Repos" ? h * 60 + m : 0;
-
-  // Double vérification plafond
-  if (recupMin > reposAcquisMinCourant) recupMin = reposAcquisMinCourant;
+  // Pas de saisie h/m : le collaborateur déclare juste le choix,
+  // les récup posées sont gérées séparément par la direction dans TIMMI
+  const recupMin = 0;
 
   const comment = document.getElementById("recup-comment").value.trim();
   const btn     = document.getElementById("btn-enregistrer");
@@ -622,10 +584,19 @@ async function enregistrerRecup() {
       + "&commentaire="  + enc(comment)
     );
     if (data.ok) {
-      affMsg("message-compte", "✅ Enregistré");
+      // Mise à jour locale immédiate de la contrepartie
+      const idx = _semaines.findIndex(s => s.lundi === semaineSelectionnee.lundi);
+      if (idx !== -1) {
+        _semaines[idx].contrepartie = contrepartieChoisie;
+        if (_semaines[idx].alerte === "Contrepartie non renseignée")
+          _semaines[idx].alerte = "";
+      }
+      afficherSemaines();
       document.getElementById("form-contrepartie").style.display = "none";
+      // Recharger le solde depuis le serveur (calcul fiable)
+      chargerSolde(document.getElementById("nom-compte").value);
       semaineSelectionnee = null;
-      await chargerCompte();
+      affMsg("message-compte", "✅ Enregistré");
     } else {
       affMsg("message-compte", "❌ " + (data.error || "Erreur"));
     }
@@ -634,6 +605,23 @@ async function enregistrerRecup() {
   } finally {
     btn.disabled = false; btn.textContent = "Enregistrer";
   }
+}
+
+// Recalcul hhmm côté client (miroir de la fonction Apps Script)
+function minutesEnHHMM(min) {
+  if (!min || min <= 0) return "0h00";
+  return Math.floor(min / 60) + "h" + String(Math.round(min % 60)).padStart(2, "0");
+}
+
+// ── Recharge uniquement le solde (après enregistrement) ──────
+async function chargerSolde(nom) {
+  try {
+    const soldeData = await fetchJSON(SCRIPT_URL + "?action=getSolde&nom=" + enc(nom));
+    document.getElementById("solde-valeur").textContent =
+      (soldeData.soldeMin || 0) > 0 ? soldeData.soldeH : "0h00";
+    document.getElementById("solde-alerte").textContent =
+      soldeData.alerte ? "⚠️ Seuil 7h atteint — demander la prise dans les 2 mois" : "";
+  } catch { /* silencieux */ }
 }
 
 // ── Utilitaires ────────────────────────────────────────────────
