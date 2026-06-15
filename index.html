@@ -1,630 +1,388 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pointage ADIL</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f9f5f0;
-  margin: 0;
-  padding: 0;
-}
+// ============================================================
+// ADIL 57 – Apps Script v3
+// Architecture :
+//   "Pointage_Prénom"  ← une feuille par collaborateur
+//   "Récup_Prénom"     ← contrepartie/récup par collaborateur
+//   "HS_HC_Prénom"     ← résultats (menu direction)
+// ============================================================
 
-/* ── Tabs ── */
-.tabs {
-  display: flex;
-  max-width: 400px;
-  margin: 30px auto 0;
-  border-radius: 15px 15px 0 0;
-  overflow: hidden;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
-}
-.tab-btn {
-  flex: 1;
-  padding: 14px;
-  background: #ede8e2;
-  border: none;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  font-weight: bold;
-  color: #888;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.tab-btn.active {
-  background: white;
-  color: #ED6A32;
-}
+const CONFIG = {
+  SEUIL_REPOS_MIN: 7 * 60,
 
-/* ── Container ── */
-.container {
-  max-width: 400px;
-  margin: 0 auto 40px;
-  background: white;
-  padding: 30px;
-  border-radius: 0 0 15px 15px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-  text-align: center;
-}
-.section { display: none; }
-.section.active { display: block; }
+  // Pause midi : déduite si la plage chevauche 12h30–13h30
+  PAUSE_DEBUT_H: 12, PAUSE_DEBUT_M: 30,
+  PAUSE_FIN_H:   13, PAUSE_FIN_M:   30,
+  PAUSE_DUREE_MIN: 60,
 
-/* ── Éléments originaux ── */
-.logo { max-width: 120px; margin-bottom: 15px; }
-h2 { color: #575756; margin-bottom: 20px; }
-
-input[type="text"], select {
-  width: 90%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-}
-.btn-pointage {
-  width: 45%;
-  padding: 12px;
-  margin: 10px 5px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-.btn-pointage:hover    { opacity: 0.9; }
-.btn-pointage:disabled { opacity: 0.5; cursor: default; }
-.debut { background-color: #ED6A32; }
-.fin   { background-color: #575756; }
-
-.spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #ED6A32;
-  border-radius: 50%;
-  width: 20px; height: 20px;
-  animation: spin 1s linear infinite;
-  margin: 10px auto;
-  display: none;
-}
-@keyframes spin { 100% { transform: rotate(360deg); } }
-#message { margin-top: 15px; line-height: 1.3; font-weight: bold; color: #ED6A32; }
-
-/* ── Mon compte ── */
-.section-label {
-  color: #575756;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  text-align: left;
-  margin: 20px 0 8px;
-}
-.section-label:first-child { margin-top: 0; }
-
-/* Solde */
-.solde-bloc {
-  background: #f9f5f0;
-  border-radius: 10px;
-  padding: 16px 12px;
-  margin-bottom: 4px;
-}
-.solde-valeur { font-size: 34px; font-weight: bold; color: #575756; }
-.solde-label  { font-size: 12px; color: #aaa; margin-top: 2px; }
-.solde-alerte { margin-top: 6px; font-size: 13px; font-weight: bold; color: #ED6A32; }
-
-/* Semaines — zone scrollable */
-.semaines-scroll {
-  max-height: 380px; /* environ 3 cartes visibles */
-  overflow-y: auto;
-  margin: 0 -4px;
-  padding: 0 4px;
-  /* Indicateur visuel qu'on peut scroller */
-  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-}
-.semaines-scroll::-webkit-scrollbar { width: 4px; }
-.semaines-scroll::-webkit-scrollbar-track { background: #f0ebe4; border-radius: 4px; }
-.semaines-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-
-/* Carte semaine */
-.semaine-card {
-  border: 2px solid #e8e0d8;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color 0.2s;
-  text-align: left;
-}
-.semaine-card:hover               { border-color: #ED6A32; }
-.semaine-card.selected            { border-color: #ED6A32; }
-.semaine-card.has-dep             { border-left: 4px solid #ED6A32; }
-.semaine-card.has-dep.non-solde   { border-left: 4px solid #e8a000; }
-
-.card-header {
-  padding: 12px 14px 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-.card-semaine   { font-size: 13px; font-weight: bold; color: #575756; }
-.card-badge {
-  font-size: 11px;
-  font-weight: bold;
-  padding: 2px 8px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-.badge-ok       { background: #eaf7ee; color: #27ae60; }
-.badge-dep      { background: #fdf3ee; color: #ED6A32; }
-.badge-alerte   { background: #fef3cd; color: #b07800; }
-
-.card-stats {
-  padding: 0 14px 10px;
-  display: flex;
-  gap: 16px;
-}
-.stat-item { flex: 1; }
-.stat-val  { font-size: 16px; font-weight: bold; color: #575756; }
-.stat-lbl  { font-size: 11px; color: #aaa; margin-top: 1px; }
-
-/* Événements dans la carte */
-.card-events {
-  border-top: 1px solid #f0ebe4;
-  padding: 8px 14px 10px;
-}
-.event-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 3px 0;
-  font-size: 12px;
-  color: #777;
-  border-bottom: 1px solid #f9f5f0;
-}
-.event-row:last-child { border-bottom: none; }
-.event-date  { font-weight: bold; color: #575756; min-width: 70px; }
-.event-heure { flex: 1; padding: 0 8px; }
-.event-duree { color: #ED6A32; font-weight: bold; }
-.event-comment {
-  font-size: 11px;
-  color: #aaa;
-  font-style: italic;
-  padding: 1px 0 3px 0;
-}
-
-/* Formulaire contrepartie */
-.form-contrepartie {
-  border: 2px solid #ED6A32;
-  border-radius: 10px;
-  padding: 16px;
-  margin-top: 10px;
-  text-align: left;
-  background: #fdf9f7;
-}
-.form-title {
-  font-size: 13px;
-  font-weight: bold;
-  color: #ED6A32;
-  margin-bottom: 12px;
-}
-
-.radio-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.radio-opt {
-  border: 2px solid #e0d9d2;
-  border-radius: 8px;
-  padding: 10px 8px;
-  text-align: center;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  color: #aaa;
-  transition: all 0.2s;
-}
-.radio-opt:hover     { border-color: #ED6A32; }
-.radio-opt.selected  { border-color: #ED6A32; color: #ED6A32; background: #fdf3ee; }
-.radio-opt span      { display: block; font-size: 18px; margin-bottom: 3px; }
-
-.recup-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.recup-row label {
-  display: block;
-  font-size: 11px;
-  color: #aaa;
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-.recup-row input[type="number"] {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  text-align: center;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-  margin: 0;
-}
-
-.btn-compte {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  color: white;
-  background-color: #ED6A32;
-  font-family: Arial, sans-serif;
-  transition: opacity 0.2s;
-  margin-top: 4px;
-}
-.btn-compte:hover    { opacity: 0.9; }
-.btn-compte:disabled { opacity: 0.5; cursor: default; }
-
-.btn-voir-solde {
-  width: 90%;
-  padding: 13px;
-  margin: 10px 0 4px;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  color: white;
-  background-color: #ED6A32;
-  font-family: Arial, sans-serif;
-  transition: opacity 0.2s;
-}
-.btn-voir-solde:hover { opacity: 0.9; }
-
-#message-compte { margin-top: 10px; font-weight: bold; color: #ED6A32; font-size: 14px; min-height: 18px; }
-.chargement     { color: #aaa; font-size: 14px; padding: 20px 0; text-align: center; }
-</style>
-</head>
-<body>
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('pointage')">⏱ Pointage</button>
-  <button class="tab-btn"        onclick="switchTab('compte')">👤 Mon compte</button>
-</div>
-
-<div class="container">
-
-  <!-- ══ POINTAGE ═════════════════════════════════════════════ -->
-  <div class="section active" id="tab-pointage">
-    <img src="logo.png" class="logo">
-    <h2>Pointage</h2>
-    <select id="nom">
-      <option value="">Choisir votre nom</option>
-      <option>Anaïs</option><option>Cloé</option><option>Delphine</option>
-      <option>Elsa</option><option>Frédéric</option><option>Julia</option>
-      <option>Mélissa</option><option>Thibaut</option><option>Thomas</option>
-      <option>Valentin</option><option>Véronique</option>
-    </select>
-    <input type="text" id="commentaire" placeholder="Commentaire (facultatif)">
-    <div>
-      <button class="btn-pointage debut" onclick="envoyer('debut')">Début du travail</button>
-      <button class="btn-pointage fin"   onclick="envoyer('fin')">Fin du travail</button>
-    </div>
-    <p id="message"></p>
-    <div id="spinner" class="spinner"></div>
-  </div>
-
-  <!-- ══ MON COMPTE ═══════════════════════════════════════════ -->
-  <div class="section" id="tab-compte">
-    <h2>Mon compte</h2>
-
-    <select id="nom-compte">
-      <option value="">Choisir votre nom</option>
-      <option>Anaïs</option><option>Cloé</option><option>Delphine</option>
-      <option>Elsa</option><option>Frédéric</option><option>Julia</option>
-      <option>Mélissa</option><option>Thibaut</option><option>Thomas</option>
-      <option>Valentin</option><option>Véronique</option>
-    </select>
-    <button class="btn-voir-solde" onclick="chargerCompte()">Voir mon compte</button>
-
-    <div id="spinner-compte" class="spinner"></div>
-
-    <div id="compte-content" style="display:none">
-
-      <!-- Solde -->
-      <div class="section-label" style="margin-top:18px">Solde de repos cumulé</div>
-      <div class="solde-bloc">
-        <div class="solde-valeur" id="solde-valeur">—</div>
-        <div class="solde-label">heures de repos à poser</div>
-        <div class="solde-alerte" id="solde-alerte"></div>
-      </div>
-
-      <!-- Semaines -->
-      <div class="section-label" style="margin-top:18px">Mes semaines</div>
-      <div class="semaines-scroll" id="semaines-scroll">
-        <div class="chargement">Chargement…</div>
-      </div>
-
-      <!-- Formulaire contrepartie (hors scroll, s'affiche en bas) -->
-      <div id="form-contrepartie" style="display:none">
-        <div class="form-contrepartie">
-          <div class="form-title" id="form-titre">Déclarer ma contrepartie</div>
-
-          <div class="radio-group">
-            <div class="radio-opt" id="opt-repos"    onclick="selectContrepartie('Repos')">
-              <span>😴</span>Repos
-            </div>
-            <div class="radio-opt" id="opt-paiement" onclick="selectContrepartie('Paiement')">
-              <span>💶</span>Paiement
-            </div>
-          </div>
-
-          <div id="bloc-recup" style="display:none">
-            <div style="font-size:12px;font-weight:bold;color:#aaa;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">
-              Récupérations déjà prises cette semaine
-            </div>
-            <div class="recup-row">
-              <div><label>Heures</label><input type="number" id="recup-h" min="0" max="23" value="0"></div>
-              <div><label>Minutes</label><input type="number" id="recup-m" min="0" max="59" value="0"></div>
-            </div>
-          </div>
-
-          <input type="text" id="recup-comment" placeholder="Commentaire (facultatif)"
-            style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;
-                   box-sizing:border-box;font-family:Arial,sans-serif;font-size:13px;margin-bottom:8px">
-          <button class="btn-compte" onclick="enregistrerRecup()">Enregistrer</button>
-        </div>
-      </div>
-
-    </div><!-- /compte-content -->
-
-    <p id="message-compte"></p>
-  </div>
-
-</div><!-- /container -->
-
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
-
-let _semaines           = [];
-let semaineSelectionnee = null;
-let contrepartieChoisie = null;
-
-// ── Tabs ───────────────────────────────────────────────────────
-function switchTab(tab) {
-  document.querySelectorAll(".tab-btn").forEach((b, i) =>
-    b.classList.toggle("active", (tab === "pointage") === (i === 0)));
-  document.getElementById("tab-pointage").classList.toggle("active", tab === "pointage");
-  document.getElementById("tab-compte").classList.toggle("active",   tab === "compte");
-}
-
-// ── Mémoire prénom ─────────────────────────────────────────────
-window.onload = () => {
-  const saved = localStorage.getItem("nom");
-  if (saved) {
-    document.getElementById("nom").value        = saved;
-    document.getElementById("nom-compte").value = saved;
-  }
+  CONTRATS: {
+    "Anaïs":     35,
+    "Cloé":      35,
+    "Delphine":  28,
+    "Elsa":      28,
+    "Frédéric":  35,
+    "Julia":     28,
+    "Mélissa":   28,
+    "Thibaut":   35,
+    "Thomas":    35,
+    "Valentin":  35,
+    "Véronique": 35,
+  },
 };
 
-// ══ POINTAGE ══════════════════════════════════════════════════
-function envoyer(type) {
-  const nom         = document.getElementById("nom").value;
-  const commentaire = document.getElementById("commentaire").value;
-  if (!nom) { alert("Choisissez votre nom"); return; }
-
-  const btns    = document.querySelectorAll(".btn-pointage");
-  const spinner = document.getElementById("spinner");
-  btns.forEach(b => b.disabled = true);
-  spinner.style.display = "block";
-  localStorage.setItem("nom", nom);
-
-  const url = SCRIPT_URL
-    + "?action=pointage&nom=" + encodeURIComponent(nom)
-    + "&type=" + encodeURIComponent(type)
-    + "&commentaire=" + encodeURIComponent(commentaire);
-
-  fetch(url)
-    .then(() => {
-      const msg = type === "debut"
-        ? `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bonne journée ${nom} 😊</div>`
-        : `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bonne soirée ${nom} 😁</div>`;
-      affMsg("message", msg);
-      document.getElementById("commentaire").value = "";
-    })
-    .catch(() => affMsg("message", "❌ Erreur réseau"))
-    .finally(() => { btns.forEach(b => b.disabled = false); spinner.style.display = "none"; });
+// ── doGet ────────────────────────────────────────────────────
+function doGet(e) {
+  const action = e.parameter.action || "pointage";
+  if (action === "pointage")    return handlePointage(e);
+  if (action === "recup")       return handleRecup(e);
+  if (action === "getSemaines") return handleGetSemaines(e);
+  if (action === "getSolde")    return handleGetSolde(e);
+  return json({ ok: false, error: "Action inconnue" });
 }
 
-// ══ MON COMPTE ════════════════════════════════════════════════
-async function chargerCompte() {
-  const nom = document.getElementById("nom-compte").value;
-  if (!nom) { alert("Choisissez votre nom"); return; }
+// ── ACTION : pointage ────────────────────────────────────────
+function handlePointage(e) {
+  const nom         = (e.parameter.nom || "").trim();
+  const type        = (e.parameter.type || "").trim();
+  const commentaire = (e.parameter.commentaire || "").trim();
+  if (!nom || !type) return json({ ok: false, error: "Missing parameters" });
+  const sheet = getOrCreateSheet("Pointage_" + nom,
+    ["Prénom", "Date et heure", "Type", "Commentaire"]);
+  sheet.appendRow([nom, new Date(), type, commentaire]);
+  return json({ ok: true });
+}
 
-  localStorage.setItem("nom", nom);
-  document.getElementById("nom").value              = nom;
-  document.getElementById("compte-content").style.display   = "none";
-  document.getElementById("form-contrepartie").style.display = "none";
-  document.getElementById("message-compte").innerHTML        = "";
-  document.getElementById("spinner-compte").style.display    = "block";
+// ── ACTION : saisie récup/contrepartie ───────────────────────
+function handleRecup(e) {
+  const nom          = (e.parameter.nom || "").trim();
+  const lundiISO     = (e.parameter.semaine || "").trim();
+  const contrepartie = (e.parameter.contrepartie || "").trim();
+  const recupMin     = parseInt(e.parameter.recupMin || "0", 10);
+  const commentaire  = (e.parameter.commentaire || "").trim();
+  if (!nom || !lundiISO) return json({ ok: false, error: "Missing parameters" });
 
-  try {
-    // Solde (appel séparé, rapide)
-    const soldeData = await fetchJSON(`${SCRIPT_URL}?action=getSolde&nom=${enc(nom)}`);
-    document.getElementById("solde-valeur").textContent =
-      (soldeData.soldeMin || 0) > 0 ? soldeData.soldeH : "0h00";
-    document.getElementById("solde-alerte").textContent =
-      soldeData.alerte ? "⚠️ Seuil 7h atteint — demander la prise dans les 2 mois" : "";
-
-    // Semaines (calcul en temps réel côté Apps Script)
-    const semData = await fetchJSON(`${SCRIPT_URL}?action=getSemaines&nom=${enc(nom)}`);
-    _semaines = semData.semaines || [];
-    afficherSemaines();
-
-    document.getElementById("compte-content").style.display = "block";
-  } catch(err) {
-    affMsg("message-compte", "❌ Erreur : " + err.message);
-  } finally {
-    document.getElementById("spinner-compte").style.display = "none";
+  const sheet = getOrCreateSheet("Récup_" + nom,
+    ["Prénom", "Lundi (ISO)", "Contrepartie", "Récup prise (min)", "Date saisie", "Commentaire"]);
+  const data = sheet.getDataRange().getValues();
+  let rowIdx = -1;
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][1]).trim() === lundiISO) { rowIdx = i + 1; break; }
   }
-}
-
-// ── Rendu des cartes semaine ───────────────────────────────────
-function afficherSemaines() {
-  const container = document.getElementById("semaines-scroll");
-  if (_semaines.length === 0) {
-    container.innerHTML = '<div class="chargement">Aucune semaine enregistrée.</div>';
-    return;
+  if (rowIdx > 0) {
+    sheet.getRange(rowIdx, 3, 1, 4).setValues([[contrepartie, recupMin, new Date(), commentaire]]);
+  } else {
+    sheet.appendRow([nom, lundiISO, contrepartie, recupMin, new Date(), commentaire]);
   }
-
-  container.innerHTML = _semaines.map((s, i) => {
-    // Badge
-    let badgeClass = "badge-ok", badgeTxt = "Régulier";
-    if (s.depassementMin > 0 && !s.contrepartie) { badgeClass = "badge-alerte"; badgeTxt = s.type + " – à déclarer"; }
-    else if (s.depassementMin > 0)               { badgeClass = "badge-dep";    badgeTxt = s.type + " · " + s.reposAcquisH; }
-
-    // Classe de la carte
-    let cardClass = "semaine-card";
-    if (s.depassementMin > 0 && !s.contrepartie) cardClass += " has-dep non-solde";
-    else if (s.depassementMin > 0)               cardClass += " has-dep";
-
-    // Événements
-    const evtsHTML = s.evenements.map(ev => `
-      <div class="event-row">
-        <span class="event-date">${ev.date}</span>
-        <span class="event-heure">${ev.heure}</span>
-        <span class="event-duree">${ev.dureeH}</span>
-      </div>
-      ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}
-    `).join("");
-
-    return `
-      <div class="${cardClass}" id="sem-${i}" onclick="selectSemaine(${i})">
-        <div class="card-header">
-          <div class="card-semaine">${s.semaine}</div>
-          <div class="card-badge ${badgeClass}">${badgeTxt}</div>
-        </div>
-        <div class="card-stats">
-          <div class="stat-item">
-            <div class="stat-val">${s.totalH}</div>
-            <div class="stat-lbl">travaillé</div>
-          </div>
-          ${s.depassementMin > 0 ? `
-          <div class="stat-item">
-            <div class="stat-val" style="color:#ED6A32">+${s.depassementH}</div>
-            <div class="stat-lbl">dépassement</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-val">${s.reposAcquisH}</div>
-            <div class="stat-lbl">repos acquis</div>
-          </div>` : ""}
-        </div>
-        <div class="card-events">${evtsHTML}</div>
-      </div>
-    `;
-  }).join("");
+  return json({ ok: true });
 }
 
-// ── Sélection d'une semaine ────────────────────────────────────
-function selectSemaine(idx) {
-  document.querySelectorAll(".semaine-card").forEach(el => el.classList.remove("selected"));
-  const card = document.getElementById(`sem-${idx}`);
-  card.classList.add("selected");
-  card.scrollIntoView({ behavior: "smooth", block: "nearest" });
-
-  semaineSelectionnee = _semaines[idx];
-  contrepartieChoisie = semaineSelectionnee.contrepartie || null;
-
-  // Pré-remplir si déjà déclaré
-  document.getElementById("opt-repos").classList.toggle("selected",    contrepartieChoisie === "Repos");
-  document.getElementById("opt-paiement").classList.toggle("selected", contrepartieChoisie === "Paiement");
-  document.getElementById("bloc-recup").style.display = contrepartieChoisie === "Repos" ? "block" : "none";
-  document.getElementById("recup-h").value = "0";
-  document.getElementById("recup-m").value = "0";
-  document.getElementById("recup-comment").value = "";
-
-  document.getElementById("form-titre").textContent =
-    semaineSelectionnee.depassementMin > 0
-      ? `Déclarer ma contrepartie — ${semaineSelectionnee.semaine}`
-      : `Semaine sans dépassement — ${semaineSelectionnee.semaine}`;
-
-  document.getElementById("form-contrepartie").style.display =
-    semaineSelectionnee.depassementMin > 0 ? "block" : "none";
+// ── ACTION : getSemaines (temps réel) ────────────────────────
+function handleGetSemaines(e) {
+  const nom = (e.parameter.nom || "").trim();
+  if (!nom) return json({ ok: false, error: "Missing nom" });
+  const resultats = calculerPourCollaborateur(nom);
+  return json({ ok: true, semaines: resultats.map(r => ({
+    semaine:        r.semaineTxt,
+    lundi:          r.lundiISO,
+    totalH:         r.totalEffectifH,
+    depassementH:   r.depassementH,
+    depassementMin: r.depassementMin,
+    type:           r.typeCalc,
+    contrepartie:   r.contrepartie,
+    reposAcquisH:   r.reposAcquisH,
+    reposAcquisMin: r.reposAcquisMin,
+    alerte:         r.alerte,
+    evenements:     r.evenements,
+  }))});
 }
 
-function selectContrepartie(val) {
-  contrepartieChoisie = val;
-  document.getElementById("opt-repos").classList.toggle("selected",    val === "Repos");
-  document.getElementById("opt-paiement").classList.toggle("selected", val === "Paiement");
-  document.getElementById("bloc-recup").style.display = val === "Repos" ? "block" : "none";
+// ── ACTION : getSolde (temps réel) ────────────────────────────
+function handleGetSolde(e) {
+  const nom = (e.parameter.nom || "").trim();
+  if (!nom) return json({ ok: false, error: "Missing nom" });
+  const resultats = calculerPourCollaborateur(nom);
+  const soldeMin  = resultats.reduce((sum, r) => {
+    if (r.contrepartie === "Paiement") return sum;
+    return sum + r.reposAcquisMin;
+  }, 0);
+  return json({ ok: true, soldeMin, soldeH: minutesEnHHMM(soldeMin),
+    alerte: soldeMin >= CONFIG.SEUIL_REPOS_MIN });
 }
 
-// ── Enregistrement ─────────────────────────────────────────────
-async function enregistrerRecup() {
-  const nom = document.getElementById("nom-compte").value;
-  if (!nom || !semaineSelectionnee || !contrepartieChoisie) {
-    alert("Sélectionnez une semaine et un type de contrepartie.");
-    return;
+// ── CALCUL CENTRAL ────────────────────────────────────────────
+function calculerPourCollaborateur(nom) {
+  const contratH   = CONFIG.CONTRATS[nom] || 35;
+  const contratMin = contratH * 60;
+  const tempsPlein = contratH >= 35;
+
+  const pSheet = SpreadsheetApp.getActiveSpreadsheet()
+                               .getSheetByName("Pointage_" + nom);
+  if (!pSheet) return [];
+
+  // Lire pointages
+  const rawData  = pSheet.getDataRange().getValues();
+  const pointages = [];
+  for (let i = 1; i < rawData.length; i++) {
+    const dt      = rawData[i][1];
+    const type    = String(rawData[i][2]).trim().toLowerCase();
+    const comment = String(rawData[i][3] || "").trim();
+    if (!dt || (type !== "debut" && type !== "fin")) continue;
+    const d = dt instanceof Date ? dt : new Date(dt);
+    if (isNaN(d)) continue;
+    pointages.push({ date: d, type, comment });
+  }
+  pointages.sort((a, b) => a.date - b.date);
+
+  // Lire récup/contrepartie
+  const recupMap = lireRecupMap(nom);
+
+  // Grouper par semaine
+  const groupes = {};
+  for (const p of pointages) {
+    const lundi  = getLundi(p.date);
+    const iso    = formatDateISO(lundi);
+    if (!groupes[iso]) groupes[iso] = { lundi, pointages: [] };
+    groupes[iso].pointages.push(p);
   }
 
-  const h        = parseInt(document.getElementById("recup-h").value || "0", 10);
-  const m        = parseInt(document.getElementById("recup-m").value || "0", 10);
-  const recupMin = contrepartieChoisie === "Repos" ? h * 60 + m : 0;
-  const comment  = document.getElementById("recup-comment").value.trim();
+  const resultats = [];
+  for (const lundiISO of Object.keys(groupes).sort().reverse()) {
+    const { lundi, pointages: pts } = groupes[lundiISO];
+    const dimanche = new Date(lundi);
+    dimanche.setDate(dimanche.getDate() + 6);
 
-  const btn = document.querySelector(".form-contrepartie .btn-compte");
-  btn.disabled = true; btn.textContent = "Enregistrement…";
+    const plages        = apparierPlages(pts);
+    const totalBrutMin  = plages.reduce((s, p) => s + p.dureeMin, 0);
 
-  try {
-    const data = await fetchJSON(
-      SCRIPT_URL
-      + "?action=recup"
-      + "&nom="          + enc(nom)
-      + "&semaine="      + enc(semaineSelectionnee.lundi)
-      + "&contrepartie=" + enc(contrepartieChoisie)
-      + "&recupMin="     + recupMin
-      + "&commentaire="  + enc(comment)
-    );
-    if (data.ok) {
-      affMsg("message-compte", "✅ Enregistré");
-      document.getElementById("form-contrepartie").style.display = "none";
-      semaineSelectionnee = null;
-      await chargerCompte(); // recharge tout en temps réel
-    } else {
-      affMsg("message-compte", "❌ " + (data.error || "Erreur inconnue"));
+    const recupEntry    = recupMap[lundiISO] || {};
+    const recupPriseMin = recupEntry.recupMin || 0;
+    const contrepartie  = recupEntry.contrepartie || "";
+
+    // Temps effectif = brut − récup prises
+    const totalEffectif  = Math.max(0, totalBrutMin - recupPriseMin);
+    const depassementMin = Math.max(0, totalEffectif - contratMin);
+
+    let t1 = 0, t2 = 0, reposMin = 0, alerte35 = false;
+    if (depassementMin > 0) {
+      if (tempsPlein) {
+        t1      = Math.min(depassementMin, 8 * 60);
+        t2      = Math.max(0, depassementMin - 8 * 60);
+        reposMin = Math.round(t1 * 1.25 + t2 * 1.5);
+      } else {
+        const lim = contratMin / 10;
+        t1       = Math.min(depassementMin, lim);
+        t2       = Math.max(0, depassementMin - lim);
+        reposMin = Math.round(t1 * 1.10 + t2 * 1.25);
+        if (totalEffectif > 35 * 60) alerte35 = true;
+      }
     }
-  } catch {
-    affMsg("message-compte", "❌ Erreur réseau");
-  } finally {
-    btn.disabled = false; btn.textContent = "Enregistrer";
+
+    // Si paiement : repos comptabilisé = 0
+    const reposComptabilise = contrepartie === "Paiement" ? 0 : reposMin;
+
+    let alerte = "";
+    if (alerte35)                                  alerte = "⚠️ Dépasse 35h (temps partiel)";
+    else if (depassementMin > 0 && !contrepartie)  alerte = "Contrepartie non renseignée";
+
+    // Événements lisibles
+    const evenements = plages.map(p => ({
+      date:        formatDateFR(p.debut),
+      heure:       formatHeure(p.debut) + "–" + formatHeure(p.fin),
+      dureeH:      minutesEnHHMM(p.dureeMin),
+      pauseDeduite: p.pauseDeduite,
+      commentaire: p.comment || "",
+    }));
+
+    resultats.push({
+      lundiISO,
+      semaineTxt:       "S" + getNumSemaine(lundi) + " · "
+                        + formatDateFR(lundi) + " – " + formatDateFR(dimanche),
+      contratH,
+      totalEffectifH:   minutesEnHHMM(totalEffectif),
+      totalEffectifMin: totalEffectif,
+      depassementH:     minutesEnHHMM(depassementMin),
+      depassementMin,
+      typeCalc:         depassementMin > 0 ? (tempsPlein ? "HS" : "HC") : "—",
+      tranche1H:        minutesEnHHMM(t1),
+      tranche2H:        minutesEnHHMM(t2),
+      reposAcquisH:     minutesEnHHMM(reposComptabilise),
+      reposAcquisMin:   reposComptabilise,
+      contrepartie,
+      recupPriseH:      minutesEnHHMM(recupPriseMin),
+      alerte,
+      evenements,
+    });
   }
+  return resultats;
 }
 
-// ── Utilitaires ────────────────────────────────────────────────
-async function fetchJSON(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("HTTP " + res.status);
-  return res.json();
+// ── APPARIEMENT début/fin + déduction pause midi ──────────────
+// La pause 12h30–13h30 (1h) est déduite automatiquement
+// si la plage chevauche cette fenêtre d'au moins 30 min
+function apparierPlages(pointages) {
+  const plages = [];
+  let debut    = null;
+  for (const p of pointages) {
+    if (p.type === "debut") {
+      debut = p;
+    } else if (p.type === "fin" && debut) {
+      const brutMin = Math.round((p.date - debut.date) / 60000);
+      if (brutMin > 0) {
+        const { netMin, pauseDeduite } = deduirePauseMidi(debut.date, p.date, brutMin);
+        plages.push({
+          debut: debut.date,
+          fin:   p.date,
+          dureeMin: netMin,
+          pauseDeduite,
+          comment: debut.comment || p.comment,
+        });
+      }
+      debut = null;
+    }
+  }
+  return plages;
 }
 
-function affMsg(id, msg) {
-  const el = document.getElementById(id);
-  el.innerHTML = msg;
-  setTimeout(() => { el.innerHTML = ""; }, 7000);
+// Déduit 1h si la plage couvre 12h30–13h30 (chevauchement ≥ 30 min)
+function deduirePauseMidi(dateDebut, dateFin, brutMin) {
+  const pauseDebut = new Date(dateDebut);
+  pauseDebut.setHours(CONFIG.PAUSE_DEBUT_H, CONFIG.PAUSE_DEBUT_M, 0, 0);
+  const pauseFin = new Date(dateDebut);
+  pauseFin.setHours(CONFIG.PAUSE_FIN_H, CONFIG.PAUSE_FIN_M, 0, 0);
+
+  const chevauchDebut = Math.max(dateDebut, pauseDebut);
+  const chevauchFin   = Math.min(dateFin,   pauseFin);
+  const chevauchMin   = Math.max(0, Math.round((chevauchFin - chevauchDebut) / 60000));
+
+  // Déduire seulement si le chevauchement est ≥ 30 min
+  // (évite de pénaliser une plage courte qui touche juste midi)
+  if (chevauchMin >= 30) {
+    return { netMin: brutMin - CONFIG.PAUSE_DUREE_MIN, pauseDeduite: true };
+  }
+  return { netMin: brutMin, pauseDeduite: false };
 }
 
-function enc(s) { return encodeURIComponent(s); }
-</script>
-</body>
-</html>
+// ── MENU DIRECTION : calcul + écriture feuilles HS_HC_Prénom ──
+function calculerTousLesCollaborateurs() {
+  const ui      = SpreadsheetApp.getUi();
+  const prenoms = Object.keys(CONFIG.CONTRATS);
+  let  total    = 0;
+  const alertes = [];
+
+  for (const nom of prenoms) {
+    const resultats = calculerPourCollaborateur(nom);
+    if (resultats.length === 0) continue;
+    ecrireFeuilleCollaborateur(nom, resultats);
+    total += resultats.length;
+    const solde = resultats.reduce((s, r) =>
+      r.contrepartie === "Paiement" ? s : s + r.reposAcquisMin, 0);
+    if (solde >= CONFIG.SEUIL_REPOS_MIN)
+      alertes.push(nom + " : " + minutesEnHHMM(solde) + " à poser");
+  }
+
+  let msg = "✅ " + total + " ligne(s) pour " + prenoms.length + " collaborateur(s).";
+  if (alertes.length) msg += "\n\n⚠️ SEUIL 7H ATTEINT :\n" + alertes.join("\n");
+  ui.alert(msg);
+}
+
+function ecrireFeuilleCollaborateur(nom, resultats) {
+  const ss        = SpreadsheetApp.getActiveSpreadsheet();
+  const sheetName = "HS_HC_" + nom;
+  let   sheet     = ss.getSheetByName(sheetName);
+  if (!sheet) sheet = ss.insertSheet(sheetName);
+  sheet.clearContents(); sheet.clearFormats();
+
+  const headers = ["Semaine","Contrat (h)","Total effectif","Dépassement",
+    "Type","Tranche 1","Tranche 2","Repos acquis","Récup prises","Contrepartie","Alerte","Détail"];
+  sheet.getRange(1,1,1,headers.length).setValues([headers])
+    .setFontWeight("bold").setBackground("#1a252f").setFontColor("#ffffff").setHorizontalAlignment("center");
+  sheet.setFrozenRows(1);
+
+  const rows = resultats.map(r => [
+    r.semaineTxt, r.contratH, r.totalEffectifH, r.depassementH,
+    r.typeCalc, r.tranche1H, r.tranche2H, r.reposAcquisH,
+    r.recupPriseH, r.contrepartie || "—", r.alerte,
+    r.evenements.map(e =>
+      e.date + " " + e.heure + (e.pauseDeduite ? " (-1h pause)" : "") +
+      (e.commentaire ? " [" + e.commentaire + "]" : "")
+    ).join(" | "),
+  ]);
+  sheet.getRange(2,1,rows.length,headers.length).setValues(rows);
+
+  for (let i = 0; i < resultats.length; i++) {
+    const r = resultats[i];
+    const range = sheet.getRange(i+2,1,1,headers.length);
+    if      (r.alerte.includes("⚠️")) range.setBackground("#f39c12");
+    else if (r.alerte)                range.setBackground("#fdebd0");
+    else if (r.depassementMin > 0)    range.setBackground("#fef9e7");
+    else                              range.setBackground(i%2===0 ? "#f4f6f7" : "#ffffff");
+  }
+  [220,80,110,110,60,100,100,110,100,110,200,500].forEach((w,i) => sheet.setColumnWidth(i+1,w));
+}
+
+// ── UTILITAIRES ───────────────────────────────────────────────
+function lireRecupMap(nom) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Récup_" + nom);
+  const map   = {};
+  if (!sheet) return map;
+  const data  = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    const iso = String(data[i][1]).trim();
+    if (!iso) continue;
+    map[iso] = {
+      contrepartie: String(data[i][2]).trim(),
+      recupMin:     parseInt(data[i][3] || "0", 10),
+    };
+  }
+  return map;
+}
+
+function getOrCreateSheet(name, headers) {
+  const ss  = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) {
+    sheet = ss.insertSheet(name);
+    sheet.getRange(1,1,1,headers.length).setValues([headers])
+      .setFontWeight("bold").setBackground("#1a252f").setFontColor("#ffffff");
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function getLundi(date) {
+  const d   = new Date(date);
+  const day = d.getDay();
+  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function getNumSemaine(date) {
+  const d      = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+function formatDateISO(d) {
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function formatDateFR(d) {
+  return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+}
+function formatHeure(d) {
+  return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+}
+function minutesEnHHMM(min) {
+  if (!min || min <= 0) return "0h00";
+  return Math.floor(min/60)+"h"+String(Math.round(min%60)).padStart(2,"0");
+}
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu("⏱ ADIL 57")
+    .addItem("Recalculer tous les collaborateurs","calculerTousLesCollaborateurs")
+    .addToUi();
+}
