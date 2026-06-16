@@ -37,7 +37,7 @@ body {
 /* Éléments originaux */
 .logo { max-width: 120px; margin-bottom: 15px; }
 h2 { color: #575756; margin-bottom: 20px; }
-input[type="text"], input[type="date"], input[type="time"], select {
+input[type="text"], input[type="date"], select {
   width: 90%; padding: 12px; margin: 10px 0;
   border-radius: 8px; border: 1px solid #ccc;
   box-sizing: border-box; font-family: Arial, sans-serif; font-size: 14px;
@@ -79,12 +79,6 @@ input[type="text"], input[type="date"], input[type="time"], select {
   margin-top: 8px; font-size: 13px; font-weight: bold;
   color: #ED6A32; padding: 6px 10px;
   background: #fdf3ee; border-radius: 6px; display: inline-block;
-}
-
-/* Récapitulatif du solde */
-#recap-solde {
-  background: #f9f5f0; border-radius: 10px;
-  padding: 12px; text-align: left; font-size: 13px;
 }
 
 /* Semaines scroll */
@@ -141,14 +135,6 @@ input[type="text"], input[type="date"], input[type="time"], select {
 .event-pause { font-size: 10px; color: #bbb; margin-left: 3px; }
 .event-comment { font-size: 11px; color: #aaa; font-style: italic; padding: 1px 0 3px; }
 
-/* Récupérations planifiées */
-.recup-planifiee {
-  background: #eaf7ee; border-radius: 8px;
-  padding: 8px 12px; margin: 6px 0;
-  font-size: 12px; color: #27ae60;
-  border-left: 3px solid #27ae60;
-}
-
 /* Formulaire poser récup / demander paiement */
 .form-bloc {
   border: 2px solid #e8e0d8; border-radius: 10px;
@@ -183,7 +169,7 @@ input[type="text"], input[type="date"], input[type="time"], select {
   display: block; font-size: 11px;
   color: #aaa; font-weight: bold; margin-bottom: 4px;
 }
-.duree-row input[type="number"], .duree-row input[type="time"] {
+.duree-row input[type="number"] {
   width: 100%; padding: 10px; border-radius: 8px;
   border: 1px solid #ccc; font-size: 15px;
   text-align: center; box-sizing: border-box;
@@ -295,24 +281,6 @@ input[type="text"], input[type="date"], input[type="time"], select {
         </div>
       </div>
 
-      <!-- Récapitulatif du solde -->
-      <div class="section-label">Récapitulatif du solde</div>
-      <div class="solde-bloc" id="recap-solde">
-        <div style="text-align:left;line-height:1.8">
-          <strong>✅ Repos acquis (HS/HC)</strong><br>
-          <span id="repos-acquis">—</span><br><br>
-
-          <strong>😴 Récup posées</strong><br>
-          <span id="recup-posees">—</span><br><br>
-
-          <strong>💶 Paiements demandés</strong><br>
-          <span id="paiements-demandes">—</span><br><br>
-
-          <strong>Solde disponible</strong><br>
-          <span id="solde-disponible">—</span>
-        </div>
-      </div>
-
       <!-- 2. Poser une récup ou demander paiement -->
       <div class="section-label">Utiliser mon solde</div>
       <div class="form-bloc">
@@ -333,42 +301,21 @@ input[type="text"], input[type="date"], input[type="time"], select {
           <input type="date" id="date-recup" class="input-full" style="width:100%;margin:0 0 10px">
         </div>
 
-        <!-- Plage horaire (visible uniquement en mode récup) -->
-        <div id="bloc-horaires">
-          <span class="field-label">Horaire de récupération</span>
-          <div class="duree-row">
-            <div>
-              <label>Début</label>
-              <input type="time" id="heure-debut" value="09:00" onchange="majSoldeRestant()">
-            </div>
-            <div>
-              <label>Fin</label>
-              <input type="time" id="heure-fin" value="10:00" onchange="majSoldeRestant()">
-            </div>
+        <!-- Durée -->
+        <span class="field-label">Durée</span>
+        <div class="duree-row">
+          <div><label>Heures</label>
+            <input type="number" id="duree-h" min="0" max="23" value="0" oninput="majSoldeRestant()">
+          </div>
+          <div><label>Minutes</label>
+            <input type="number" id="duree-m" min="0" max="59" value="0" oninput="majSoldeRestant()">
           </div>
         </div>
-
-        <!-- Durée (visible uniquement en mode paiement) -->
-        <div id="bloc-duree">
-          <span class="field-label">Durée</span>
-          <div class="duree-row">
-            <div>
-              <label>Heures</label>
-              <input type="number" id="duree-h" min="0" max="23" value="0" oninput="majSoldeRestant()">
-            </div>
-            <div>
-              <label>Minutes</label>
-              <input type="number" id="duree-m" min="0" max="59" value="0" oninput="majSoldeRestant()">
-            </div>
-          </div>
-          <div class="solde-restant" id="solde-restant"></div>
-        </div>
+        <div class="solde-restant" id="solde-restant"></div>
 
         <span class="field-label">Commentaire <span style="font-weight:normal">(facultatif)</span></span>
-        <input type="text" id="comment-solde" class="input-full" placeholder="Ex: Récupération pour rendez-vous médical">
 
         <button class="btn-action" id="btn-valider-solde" onclick="validerSolde()">Valider</button>
-        <p id="message-compte"></p>
       </div>
 
       <!-- 3. Mes semaines -->
@@ -377,14 +324,11 @@ input[type="text"], input[type="date"], input[type="time"], select {
         <div class="chargement">Chargement…</div>
       </div>
 
-      <!-- 4. Récupérations planifiées -->
-      <div class="section-label">Récupérations planifiées</div>
-      <div id="recup-planifiees" class="semaines-scroll">
-        <div class="chargement">Aucune récupération planifiée.</div>
-      </div>
-
     </div><!-- /compte-content -->
+
+    <p id="message-compte"></p>
   </div>
+
 </div>
 
 <script>
@@ -409,7 +353,6 @@ window.onload = () => {
   }
   // Date du jour par défaut
   document.getElementById("date-recup").value = new Date().toISOString().split("T")[0];
-  setMode(_mode);
 };
 
 // ══ POINTAGE ══════════════════════════════════════════════════
@@ -445,14 +388,12 @@ async function chargerCompte() {
   document.getElementById("spinner-compte").style.display = "block";
 
   try {
-    const [soldeData, semData, recupData] = await Promise.all([
+    const [soldeData, semData] = await Promise.all([
       fetchJSON(SCRIPT_URL + "?action=getSolde&nom="    + enc(nom)),
       fetchJSON(SCRIPT_URL + "?action=getSemaines&nom=" + enc(nom)),
-      fetchJSON(SCRIPT_URL + "?action=getRecupPlanifiees&nom=" + enc(nom)),
     ]);
     afficherSolde(soldeData);
     afficherSemaines(semData.semaines || []);
-    afficherRecupPlanifiees(recupData.recupPlanifiees || []);
     document.getElementById("compte-content").style.display = "block";
   } catch(err) {
     affMsg("message-compte", "❌ Erreur : " + err.message);
@@ -464,27 +405,9 @@ async function chargerCompte() {
 function afficherSolde(data) {
   _soldeMin = data.soldeMin || 0;
   document.getElementById("solde-valeur").textContent = minutesEnHHMM(_soldeMin);
-  document.getElementById("repos-acquis").textContent = "+" + minutesEnHHMM(data.reposAcquis || 0);
-  document.getElementById("recup-posees").textContent = "-" + minutesEnHHMM(data.recupPosees || 0);
-  document.getElementById("paiements-demandes").textContent = "-" + minutesEnHHMM(data.paiements || 0);
-  document.getElementById("solde-disponible").textContent = minutesEnHHMM(_soldeMin);
-  document.getElementById("solde-alerte").style.display = data.alerte ? "inline-block" : "none";
+  const alertEl = document.getElementById("solde-alerte");
+  alertEl.style.display = data.alerte ? "inline-block" : "none";
   majSoldeRestant();
-}
-
-function afficherRecupPlanifiees(recupPlanifiees) {
-  const container = document.getElementById("recup-planifiees");
-  if (recupPlanifiees.length === 0) {
-    container.innerHTML = '<div class="chargement">Aucune récupération planifiée.</div>';
-    return;
-  }
-  container.innerHTML = recupPlanifiees.map(r => `
-    <div class="recup-planifiee">
-      <strong>${r.date}</strong><br>
-      ${r.heureDebut} → ${r.heureFin} (${r.dureeH})
-      ${r.commentaire ? `<br><span style="font-style:italic;color:#575756;">${r.commentaire}</span>` : ""}
-    </div>
-  `).join("");
 }
 
 // ── Semaines ───────────────────────────────────────────────────
@@ -542,54 +465,27 @@ function setMode(mode) {
   document.getElementById("mode-recup").classList.toggle("active",    mode === "recup");
   document.getElementById("mode-paiement").classList.toggle("active", mode === "paiement");
   document.getElementById("bloc-date").style.display = mode === "recup" ? "block" : "none";
-  document.getElementById("bloc-horaires").style.display = mode === "recup" ? "block" : "none";
-  document.getElementById("bloc-duree").style.display = mode === "paiement" ? "block" : "none";
   document.getElementById("btn-valider-solde").textContent =
     mode === "recup" ? "Confirmer la récupération" : "Demander le paiement";
   majSoldeRestant();
 }
 
-function calculerDureeRecup() {
-  const debut = document.getElementById("heure-debut").value;
-  const fin = document.getElementById("heure-fin").value;
-  if (!debut || !fin) return 0;
-  const [hd, md] = debut.split(":").map(Number);
-  const [hf, mf] = fin.split(":").map(Number);
-  return (hf * 60 + mf) - (hd * 60 + md);
-}
-
 function majSoldeRestant() {
-  const el = document.getElementById("solde-restant");
-  if (_mode === "recup") {
-    const dureeMin = calculerDureeRecup();
-    if (dureeMin <= 0) {
-      el.innerHTML = "";
-      return;
-    }
-    const restant = _soldeMin - dureeMin;
-    if (restant < 0) {
-      el.innerHTML = "⚠️ Dépasse votre solde de <strong>" + minutesEnHHMM(-restant) + "</strong>";
-      el.style.color = "#e74c3c";
-    } else {
-      el.innerHTML = "Solde restant après : <strong>" + minutesEnHHMM(restant) + "</strong>";
-      el.style.color = "";
-    }
+  const h = parseInt(document.getElementById("duree-h").value || "0", 10);
+  const m = parseInt(document.getElementById("duree-m").value || "0", 10);
+  const saisi    = h * 60 + m;
+  const restant  = _soldeMin - saisi;
+  const el       = document.getElementById("solde-restant");
+  if (saisi <= 0) {
+    el.innerHTML = "";
+    return;
+  }
+  if (restant < 0) {
+    el.innerHTML = "⚠️ Dépasse votre solde de <strong>" + minutesEnHHMM(-restant) + "</strong>";
+    el.style.color = "#e74c3c";
   } else {
-    const h = parseInt(document.getElementById("duree-h").value || "0", 10);
-    const m = parseInt(document.getElementById("duree-m").value || "0", 10);
-    const saisi = h * 60 + m;
-    if (saisi <= 0) {
-      el.innerHTML = "";
-      return;
-    }
-    const restant = _soldeMin - saisi;
-    if (restant < 0) {
-      el.innerHTML = "⚠️ Dépasse votre solde de <strong>" + minutesEnHHMM(-restant) + "</strong>";
-      el.style.color = "#e74c3c";
-    } else {
-      el.innerHTML = "Solde restant après : <strong>" + minutesEnHHMM(restant) + "</strong>";
-      el.style.color = "";
-    }
+    el.innerHTML = "Solde restant après : <strong>" + minutesEnHHMM(restant) + "</strong>";
+    el.style.color = "";
   }
 }
 
@@ -598,21 +494,11 @@ async function validerSolde() {
   const nom = document.getElementById("nom-compte").value;
   if (!nom) { alert("Choisissez votre nom"); return; }
 
-  let dureeMin, heureDebut, heureFin;
-  if (_mode === "recup") {
-    dureeMin = calculerDureeRecup();
-    if (dureeMin <= 0) { alert("Indiquez une plage horaire valide."); return; }
-    heureDebut = document.getElementById("heure-debut").value;
-    heureFin = document.getElementById("heure-fin").value;
-    const dateRecup = document.getElementById("date-recup").value;
-    if (!dateRecup) { alert("Indiquez la date de récupération."); return; }
-  } else {
-    const h = parseInt(document.getElementById("duree-h").value || "0", 10);
-    const m = parseInt(document.getElementById("duree-m").value || "0", 10);
-    dureeMin = h * 60 + m;
-    if (dureeMin <= 0) { alert("Indiquez une durée."); return; }
-  }
+  const h = parseInt(document.getElementById("duree-h").value || "0", 10);
+  const m = parseInt(document.getElementById("duree-m").value || "0", 10);
+  const dureeMin = h * 60 + m;
 
+  if (dureeMin <= 0) { alert("Indiquez une durée."); return; }
   if (dureeMin > _soldeMin) { alert("Durée supérieure à votre solde disponible."); return; }
 
   const commentaire = document.getElementById("comment-solde").value.trim();
@@ -623,12 +509,11 @@ async function validerSolde() {
     let url;
     if (_mode === "recup") {
       const dateRecup = document.getElementById("date-recup").value;
+      if (!dateRecup) { alert("Indiquez la date de récupération."); btn.disabled = false; setMode("recup"); return; }
       url = SCRIPT_URL + "?action=poserRecup"
         + "&nom="        + enc(nom)
         + "&dateRecup="  + enc(dateRecup)
         + "&dureeMin="   + dureeMin
-        + "&heureDebut=" + enc(heureDebut)
-        + "&heureFin="   + enc(heureFin)
         + "&commentaire=" + enc(commentaire);
     } else {
       url = SCRIPT_URL + "?action=demanderPaiement"
@@ -642,25 +527,15 @@ async function validerSolde() {
       // Mise à jour immédiate du solde
       _soldeMin -= dureeMin;
       document.getElementById("solde-valeur").textContent = minutesEnHHMM(_soldeMin);
-      document.getElementById("solde-disponible").textContent = minutesEnHHMM(_soldeMin);
       document.getElementById("solde-alerte").style.display =
         _soldeMin >= 420 ? "inline-block" : "none";
 
       // Reset formulaire
-      if (_mode === "recup") {
-        document.getElementById("heure-debut").value = "09:00";
-        document.getElementById("heure-fin").value = "10:00";
-        document.getElementById("date-recup").value = new Date().toISOString().split("T")[0];
-      } else {
-        document.getElementById("duree-h").value = "0";
-        document.getElementById("duree-m").value = "0";
-      }
+      document.getElementById("duree-h").value = "0";
+      document.getElementById("duree-m").value = "0";
       document.getElementById("comment-solde").value = "";
+      document.getElementById("date-recup").value = new Date().toISOString().split("T")[0];
       document.getElementById("solde-restant").innerHTML = "";
-
-      // Recharger les récupérations planifiées
-      const recupData = await fetchJSON(SCRIPT_URL + "?action=getRecupPlanifiees&nom=" + enc(nom));
-      afficherRecupPlanifiees(recupData.recupPlanifiees || []);
 
       const action = _mode === "recup" ? "Récupération enregistrée ✅" : "Demande de paiement envoyée ✅";
       affMsg("message-compte", action);
