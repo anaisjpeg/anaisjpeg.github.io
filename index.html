@@ -5,36 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pointage ADIL</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f9f5f0;
-  margin: 0; padding: 0;
-}
+body { font-family: Arial, sans-serif; background-color: #f9f5f0; margin: 0; padding: 0; }
 .tabs {
-  display: flex; max-width: 400px;
-  margin: 30px auto 0;
-  border-radius: 15px 15px 0 0;
-  overflow: hidden;
+  display: flex; max-width: 400px; margin: 30px auto 0;
+  border-radius: 15px 15px 0 0; overflow: hidden;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
 }
 .tab-btn {
-  flex: 1; padding: 14px; background: #ede8e2;
-  border: none; font-family: Arial, sans-serif;
-  font-size: 14px; font-weight: bold; color: #888;
-  cursor: pointer; transition: background 0.2s, color 0.2s;
+  flex: 1; padding: 14px; background: #ede8e2; border: none;
+  font-family: Arial, sans-serif; font-size: 14px; font-weight: bold;
+  color: #888; cursor: pointer; transition: background 0.2s, color 0.2s;
 }
 .tab-btn.active { background: white; color: #ED6A32; }
 .container {
-  max-width: 400px; margin: 0 auto 40px;
-  background: white; padding: 30px;
-  border-radius: 0 0 15px 15px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-  text-align: center;
+  max-width: 400px; margin: 0 auto 40px; background: white;
+  padding: 30px; border-radius: 0 0 15px 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;
 }
 .section { display: none; }
 .section.active { display: block; }
 
-/* Éléments originaux */
+/* Originaux */
 .logo { max-width: 120px; margin-bottom: 15px; }
 h2 { color: #575756; margin-bottom: 20px; }
 input[type="text"], input[type="date"], select {
@@ -43,9 +34,8 @@ input[type="text"], input[type="date"], select {
   box-sizing: border-box; font-family: Arial, sans-serif; font-size: 14px;
 }
 .btn-pointage {
-  width: 45%; padding: 12px; margin: 10px 5px;
-  border: none; border-radius: 8px;
-  font-size: 16px; cursor: pointer; color: white;
+  width: 45%; padding: 12px; margin: 10px 5px; border: none;
+  border-radius: 8px; font-size: 16px; cursor: pointer; color: white;
   font-family: Arial, sans-serif;
 }
 .btn-pointage:hover    { opacity: 0.9; }
@@ -55,8 +45,7 @@ input[type="text"], input[type="date"], select {
 .spinner {
   border: 4px solid #f3f3f3; border-top: 4px solid #ED6A32;
   border-radius: 50%; width: 20px; height: 20px;
-  animation: spin 1s linear infinite;
-  margin: 10px auto; display: none;
+  animation: spin 1s linear infinite; margin: 10px auto; display: none;
 }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 #message { margin-top: 15px; line-height: 1.3; font-weight: bold; color: #ED6A32; }
@@ -67,8 +56,6 @@ input[type="text"], input[type="date"], select {
   text-transform: uppercase; letter-spacing: 0.6px;
   text-align: left; margin: 22px 0 8px;
 }
-
-/* Solde */
 .solde-bloc {
   background: #f9f5f0; border-radius: 10px;
   padding: 18px 12px; text-align: center;
@@ -76,56 +63,124 @@ input[type="text"], input[type="date"], select {
 .solde-valeur { font-size: 38px; font-weight: bold; color: #575756; }
 .solde-unit   { font-size: 14px; color: #aaa; margin-top: 2px; }
 .solde-alerte {
-  margin-top: 8px; font-size: 13px; font-weight: bold;
-  color: #ED6A32; padding: 6px 10px;
-  background: #fdf3ee; border-radius: 6px; display: inline-block;
+  margin-top: 8px; font-size: 13px; font-weight: bold; color: #ED6A32;
+  padding: 6px 10px; background: #fdf3ee; border-radius: 6px; display: inline-block;
 }
 
-/* Semaines scroll */
+/* Formulaire */
+.form-bloc {
+  border: 2px solid #e8e0d8; border-radius: 10px;
+  padding: 16px; text-align: left;
+}
+.form-bloc-title { font-size: 13px; font-weight: bold; color: #575756; margin-bottom: 14px; }
+.mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.mode-btn {
+  border: 2px solid #e0d9d2; border-radius: 8px; padding: 10px 8px;
+  text-align: center; cursor: pointer; font-size: 13px; font-weight: bold;
+  color: #aaa; transition: all 0.2s; background: white; font-family: Arial, sans-serif;
+}
+.mode-btn:hover  { border-color: #ED6A32; }
+.mode-btn.active { border-color: #ED6A32; color: #ED6A32; background: #fdf3ee; }
+.mode-btn span   { display: block; font-size: 18px; margin-bottom: 3px; }
+
+.field-label {
+  font-size: 12px; font-weight: bold; color: #aaa;
+  margin: 10px 0 4px; display: block;
+  text-transform: uppercase; letter-spacing: 0.4px;
+}
+.input-full {
+  width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
+  box-sizing: border-box; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 4px;
+}
+/* Plage horaire */
+.plage-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 4px;
+}
+.plage-row label { display: block; font-size: 11px; color: #aaa; font-weight: bold; margin-bottom: 4px; }
+.plage-row input[type="time"] {
+  width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
+  font-size: 15px; text-align: center; box-sizing: border-box;
+  font-family: Arial, sans-serif; margin: 0;
+}
+/* Durée paiement */
+.duree-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 4px; }
+.duree-row label { display: block; font-size: 11px; color: #aaa; font-weight: bold; margin-bottom: 4px; }
+.duree-row input[type="number"] {
+  width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
+  font-size: 15px; text-align: center; box-sizing: border-box;
+  font-family: Arial, sans-serif; margin: 0;
+}
+/* Aperçu durée + solde restant */
+.duree-preview {
+  font-size: 12px; color: #aaa; text-align: center;
+  background: #f9f5f0; border-radius: 6px; padding: 6px 10px;
+  margin: 6px 0 10px; min-height: 22px;
+}
+.duree-preview strong { color: #575756; }
+.duree-preview .reste { color: #ED6A32; }
+.duree-preview .erreur { color: #e74c3c; }
+
+.btn-action {
+  width: 100%; padding: 13px; border: none; border-radius: 8px;
+  font-size: 15px; font-weight: bold; cursor: pointer; color: white;
+  background-color: #ED6A32; font-family: Arial, sans-serif;
+  transition: opacity 0.2s; margin-top: 8px;
+}
+.btn-action:hover    { opacity: 0.9; }
+.btn-action:disabled { opacity: 0.5; cursor: default; }
+
+/* Message inline juste sous le bouton */
+.msg-inline {
+  font-size: 14px; font-weight: bold; text-align: center;
+  margin: 8px 0 0; min-height: 20px;
+}
+
+/* Historique */
+.histo-liste { margin: 0; }
+.histo-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid #f0ebe4; text-align: left;
+}
+.histo-row:last-child { border-bottom: none; }
+.histo-icon  { font-size: 18px; flex-shrink: 0; padding-top: 1px; }
+.histo-body  { flex: 1; min-width: 0; }
+.histo-label { font-size: 13px; font-weight: bold; }
+.histo-detail { font-size: 12px; color: #888; margin-top: 1px; }
+.histo-comment { font-size: 11px; color: #aaa; font-style: italic; margin-top: 2px; }
+.histo-duree { font-size: 14px; font-weight: bold; color: #ED6A32; flex-shrink: 0; }
+
+/* Semaines */
 .semaines-scroll {
-  max-height: 360px; overflow-y: auto;
-  margin: 0 -2px; padding: 0 2px 2px;
+  max-height: 360px; overflow-y: auto; margin: 0 -2px; padding: 0 2px 2px;
 }
 .semaines-scroll::-webkit-scrollbar { width: 4px; }
 .semaines-scroll::-webkit-scrollbar-track { background: #f0ebe4; border-radius: 4px; }
 .semaines-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-
-/* Carte semaine */
 .semaine-card {
   border: 2px solid #e8e0d8; border-radius: 10px;
   margin-bottom: 10px; overflow: hidden; text-align: left;
 }
 .semaine-card.has-dep { border-left: 4px solid #ED6A32; }
-
 .card-header {
-  padding: 10px 14px 6px;
-  display: flex; justify-content: space-between;
-  align-items: center; gap: 8px;
+  padding: 10px 14px 6px; display: flex;
+  justify-content: space-between; align-items: center; gap: 8px;
 }
 .card-semaine { font-size: 13px; font-weight: bold; color: #575756; }
 .card-badge {
-  font-size: 11px; font-weight: bold;
-  padding: 3px 8px; border-radius: 20px;
-  white-space: nowrap; flex-shrink: 0;
+  font-size: 11px; font-weight: bold; padding: 3px 8px;
+  border-radius: 20px; white-space: nowrap; flex-shrink: 0;
 }
-.badge-ok     { background: #eaf7ee; color: #27ae60; }
-.badge-dep    { background: #fdf3ee; color: #ED6A32; }
-
-.card-stats {
-  padding: 0 14px 8px; display: flex; gap: 16px;
-}
-.stat-item { flex: 1; }
-.stat-val  { font-size: 15px; font-weight: bold; color: #575756; }
-.stat-dep  { color: #ED6A32; }
-.stat-lbl  { font-size: 11px; color: #aaa; margin-top: 1px; }
-
-.card-events {
-  border-top: 1px solid #f0ebe4; padding: 6px 14px 8px;
-}
+.badge-ok  { background: #eaf7ee; color: #27ae60; }
+.badge-dep { background: #fdf3ee; color: #ED6A32; }
+.card-stats { padding: 0 14px 8px; display: flex; gap: 16px; }
+.stat-item  { flex: 1; }
+.stat-val   { font-size: 15px; font-weight: bold; color: #575756; }
+.stat-dep   { color: #ED6A32; }
+.stat-lbl   { font-size: 11px; color: #aaa; margin-top: 1px; }
+.card-events { border-top: 1px solid #f0ebe4; padding: 6px 14px 8px; }
 .event-row {
-  display: flex; justify-content: space-between;
-  align-items: baseline; padding: 2px 0;
-  font-size: 12px; color: #777;
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 2px 0; font-size: 12px; color: #777;
   border-bottom: 1px solid #f9f5f0;
 }
 .event-row:last-child { border-bottom: none; }
@@ -135,94 +190,20 @@ input[type="text"], input[type="date"], select {
 .event-pause { font-size: 10px; color: #bbb; margin-left: 3px; }
 .event-comment { font-size: 11px; color: #aaa; font-style: italic; padding: 1px 0 3px; }
 
-/* Formulaire poser récup / demander paiement */
-.form-bloc {
-  border: 2px solid #e8e0d8; border-radius: 10px;
-  padding: 16px; text-align: left;
-}
-.form-bloc-title {
-  font-size: 13px; font-weight: bold; color: #575756; margin-bottom: 14px;
-}
-
-/* Switcher Récup / Paiement */
-.mode-switch {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin-bottom: 14px;
-}
-.mode-btn {
-  border: 2px solid #e0d9d2; border-radius: 8px;
-  padding: 10px 8px; text-align: center;
-  cursor: pointer; font-size: 13px; font-weight: bold;
-  color: #aaa; transition: all 0.2s; background: white;
-  font-family: Arial, sans-serif;
-}
-.mode-btn:hover { border-color: #ED6A32; }
-.mode-btn.active { border-color: #ED6A32; color: #ED6A32; background: #fdf3ee; }
-.mode-btn span { display: block; font-size: 18px; margin-bottom: 3px; }
-
-/* Champs durée */
-.duree-row {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin: 10px 0 4px;
-}
-.duree-row label {
-  display: block; font-size: 11px;
-  color: #aaa; font-weight: bold; margin-bottom: 4px;
-}
-.duree-row input[type="number"] {
-  width: 100%; padding: 10px; border-radius: 8px;
-  border: 1px solid #ccc; font-size: 15px;
-  text-align: center; box-sizing: border-box;
-  font-family: Arial, sans-serif; margin: 0;
-}
-.solde-restant {
-  font-size: 12px; color: #aaa; text-align: center;
-  margin: 2px 0 10px;
-}
-.solde-restant strong { color: #ED6A32; }
-
-.field-label {
-  font-size: 12px; font-weight: bold;
-  color: #aaa; margin: 10px 0 4px; display: block;
-  text-transform: uppercase; letter-spacing: 0.4px;
-}
-.input-full {
-  width: 100%; padding: 10px; border-radius: 8px;
-  border: 1px solid #ccc; box-sizing: border-box;
-  font-family: Arial, sans-serif; font-size: 13px;
-  margin-bottom: 10px;
-}
-
-.btn-action {
-  width: 100%; padding: 13px; border: none;
-  border-radius: 8px; font-size: 15px; font-weight: bold;
-  cursor: pointer; color: white; background-color: #ED6A32;
-  font-family: Arial, sans-serif; transition: opacity 0.2s;
-  margin-top: 4px;
-}
-.btn-action:hover    { opacity: 0.9; }
-.btn-action:disabled { opacity: 0.5; cursor: default; }
-
 .btn-voir-solde {
-  width: 90%; padding: 13px; margin: 10px 0 4px;
-  border: none; border-radius: 8px;
-  font-size: 15px; font-weight: bold;
+  width: 90%; padding: 13px; margin: 10px 0 4px; border: none;
+  border-radius: 8px; font-size: 15px; font-weight: bold;
   cursor: pointer; color: white; background-color: #ED6A32;
   font-family: Arial, sans-serif; transition: opacity 0.2s;
 }
 .btn-voir-solde:hover { opacity: 0.9; }
-
-#message-compte {
-  margin-top: 10px; font-weight: bold;
-  color: #ED6A32; font-size: 14px; min-height: 18px;
-}
-.chargement { color: #aaa; font-size: 14px; padding: 20px 0; text-align: center; }
 .spinner-compte {
   border: 4px solid #f3f3f3; border-top: 4px solid #ED6A32;
   border-radius: 50%; width: 20px; height: 20px;
-  animation: spin 1s linear infinite;
-  margin: 10px auto; display: none;
+  animation: spin 1s linear infinite; margin: 10px auto; display: none;
 }
+.chargement { color: #aaa; font-size: 14px; padding: 20px 0; text-align: center; }
+.vide       { color: #bbb; font-size: 13px; padding: 12px 0; text-align: center; font-style: italic; }
 </style>
 </head>
 <body>
@@ -234,7 +215,7 @@ input[type="text"], input[type="date"], select {
 
 <div class="container">
 
-  <!-- ══ POINTAGE ═════════════════════════════════════════════ -->
+  <!-- ══ POINTAGE ═══════════════════════════════════════════ -->
   <div class="section active" id="tab-pointage">
     <img src="logo.png" class="logo">
     <h2>Pointage</h2>
@@ -254,10 +235,9 @@ input[type="text"], input[type="date"], select {
     <div id="spinner" class="spinner"></div>
   </div>
 
-  <!-- ══ MON COMPTE ═══════════════════════════════════════════ -->
+  <!-- ══ MON COMPTE ════════════════════════════════════════ -->
   <div class="section" id="tab-compte">
     <h2>Mon compte</h2>
-
     <select id="nom-compte">
       <option value="">Choisir votre nom</option>
       <option>Anaïs</option><option>Cloé</option><option>Delphine</option>
@@ -266,7 +246,6 @@ input[type="text"], input[type="date"], select {
       <option>Valentin</option><option>Véronique</option>
     </select>
     <button class="btn-voir-solde" onclick="chargerCompte()">Voir mon compte</button>
-
     <div class="spinner-compte" id="spinner-compte"></div>
 
     <div id="compte-content" style="display:none">
@@ -275,17 +254,16 @@ input[type="text"], input[type="date"], select {
       <div class="section-label" style="margin-top:18px">Solde de repos disponible</div>
       <div class="solde-bloc">
         <div class="solde-valeur" id="solde-valeur">—</div>
-        <div class="solde-unit">heures disponibles à poser</div>
+        <div class="solde-unit">heures disponibles</div>
         <div class="solde-alerte" id="solde-alerte" style="display:none">
           ⚠️ Seuil 7h atteint — à poser dans les 2 mois
         </div>
       </div>
 
-      <!-- 2. Poser une récup ou demander paiement -->
+      <!-- 2. Utiliser mon solde -->
       <div class="section-label">Utiliser mon solde</div>
       <div class="form-bloc">
         <div class="form-bloc-title">Je souhaite…</div>
-
         <div class="mode-switch">
           <button class="mode-btn active" id="mode-recup" onclick="setMode('recup')">
             <span>😴</span>Poser une récup
@@ -295,47 +273,71 @@ input[type="text"], input[type="date"], select {
           </button>
         </div>
 
-        <!-- Champ date (visible uniquement en mode récup) -->
-        <div id="bloc-date">
-          <span class="field-label">Date de la récupération</span>
-          <input type="date" id="date-recup" class="input-full" style="width:100%;margin:0 0 10px">
+        <!-- MODE RÉCUP -->
+        <div id="bloc-recup">
+          <span class="field-label">Date</span>
+          <input type="date" id="date-recup" class="input-full">
+
+          <span class="field-label">Plage horaire</span>
+          <div class="plage-row">
+            <div>
+              <label>De</label>
+              <input type="time" id="heure-debut" oninput="majPreview()">
+            </div>
+            <div>
+              <label>À</label>
+              <input type="time" id="heure-fin" oninput="majPreview()">
+            </div>
+          </div>
         </div>
 
-        <!-- Durée -->
-        <span class="field-label">Durée</span>
-        <div class="duree-row">
-          <div><label>Heures</label>
-            <input type="number" id="duree-h" min="0" max="23" value="0" oninput="majSoldeRestant()">
-          </div>
-          <div><label>Minutes</label>
-            <input type="number" id="duree-m" min="0" max="59" value="0" oninput="majSoldeRestant()">
+        <!-- MODE PAIEMENT -->
+        <div id="bloc-paiement" style="display:none">
+          <span class="field-label">Durée à payer</span>
+          <div class="duree-row">
+            <div><label>Heures</label>
+              <input type="number" id="duree-h" min="0" max="99" value="0" oninput="majPreview()">
+            </div>
+            <div><label>Minutes</label>
+              <input type="number" id="duree-m" min="0" max="59" value="0" oninput="majPreview()">
+            </div>
           </div>
         </div>
-        <div class="solde-restant" id="solde-restant"></div>
+
+        <!-- Aperçu durée + solde restant -->
+        <div class="duree-preview" id="duree-preview"></div>
 
         <span class="field-label">Commentaire <span style="font-weight:normal">(facultatif)</span></span>
+        <input type="text" id="comment-solde" class="input-full" placeholder="">
 
-        <button class="btn-action" id="btn-valider-solde" onclick="validerSolde()">Valider</button>
+        <button class="btn-action" id="btn-valider" onclick="validerSolde()">
+          Confirmer la récupération
+        </button>
+        <!-- ✅ Message inline immédiatement sous le bouton -->
+        <div class="msg-inline" id="msg-inline"></div>
       </div>
 
-      <!-- 3. Mes semaines -->
+      <!-- 3. Historique -->
+      <div class="section-label">Historique d'utilisation</div>
+      <div class="histo-liste" id="histo-liste">
+        <div class="chargement">Chargement…</div>
+      </div>
+
+      <!-- 4. Mes semaines -->
       <div class="section-label">Mes semaines</div>
       <div class="semaines-scroll" id="semaines-scroll">
         <div class="chargement">Chargement…</div>
       </div>
 
     </div><!-- /compte-content -->
-
-    <p id="message-compte"></p>
   </div>
 
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
-
 let _soldeMin = 0;
-let _mode     = "recup"; // "recup" ou "paiement"
+let _mode     = "recup";
 
 // ── Tabs ───────────────────────────────────────────────────────
 function switchTab(tab) {
@@ -351,19 +353,19 @@ window.onload = () => {
     document.getElementById("nom").value        = saved;
     document.getElementById("nom-compte").value = saved;
   }
-  // Date du jour par défaut
-  document.getElementById("date-recup").value = new Date().toISOString().split("T")[0];
+  document.getElementById("date-recup").value = todayISO();
 };
+
+function todayISO() { return new Date().toISOString().split("T")[0]; }
 
 // ══ POINTAGE ══════════════════════════════════════════════════
 function envoyer(type) {
   const nom         = document.getElementById("nom").value;
   const commentaire = document.getElementById("commentaire").value;
   if (!nom) { alert("Choisissez votre nom"); return; }
-  const btns    = document.querySelectorAll(".btn-pointage");
-  const spinner = document.getElementById("spinner");
-  btns.forEach(b => b.disabled = true);
-  spinner.style.display = "block";
+  const btns = document.querySelectorAll(".btn-pointage");
+  const spin = document.getElementById("spinner");
+  btns.forEach(b => b.disabled = true); spin.style.display = "block";
   localStorage.setItem("nom", nom);
   fetch(SCRIPT_URL + "?action=pointage&nom=" + enc(nom)
     + "&type=" + enc(type) + "&commentaire=" + enc(commentaire))
@@ -374,7 +376,7 @@ function envoyer(type) {
       document.getElementById("commentaire").value = "";
     })
     .catch(() => affMsg("message", "❌ Erreur réseau"))
-    .finally(() => { btns.forEach(b => b.disabled = false); spinner.style.display = "none"; });
+    .finally(() => { btns.forEach(b => b.disabled = false); spin.style.display = "none"; });
 }
 
 // ══ MON COMPTE ════════════════════════════════════════════════
@@ -384,19 +386,19 @@ async function chargerCompte() {
   localStorage.setItem("nom", nom);
   document.getElementById("nom").value = nom;
   document.getElementById("compte-content").style.display = "none";
-  document.getElementById("message-compte").innerHTML     = "";
   document.getElementById("spinner-compte").style.display = "block";
-
   try {
-    const [soldeData, semData] = await Promise.all([
-      fetchJSON(SCRIPT_URL + "?action=getSolde&nom="    + enc(nom)),
-      fetchJSON(SCRIPT_URL + "?action=getSemaines&nom=" + enc(nom)),
+    const [soldeData, semData, histData] = await Promise.all([
+      fetchJSON(SCRIPT_URL + "?action=getSolde&nom="      + enc(nom)),
+      fetchJSON(SCRIPT_URL + "?action=getSemaines&nom="   + enc(nom)),
+      fetchJSON(SCRIPT_URL + "?action=getHistorique&nom=" + enc(nom)),
     ]);
     afficherSolde(soldeData);
+    afficherHistorique(histData.historique || []);
     afficherSemaines(semData.semaines || []);
     document.getElementById("compte-content").style.display = "block";
   } catch(err) {
-    affMsg("message-compte", "❌ Erreur : " + err.message);
+    alert("❌ Erreur chargement : " + err.message);
   } finally {
     document.getElementById("spinner-compte").style.display = "none";
   }
@@ -404,88 +406,109 @@ async function chargerCompte() {
 
 function afficherSolde(data) {
   _soldeMin = data.soldeMin || 0;
-  document.getElementById("solde-valeur").textContent = minutesEnHHMM(_soldeMin);
-  const alertEl = document.getElementById("solde-alerte");
-  alertEl.style.display = data.alerte ? "inline-block" : "none";
-  majSoldeRestant();
+  document.getElementById("solde-valeur").textContent = hhmm(_soldeMin);
+  document.getElementById("solde-alerte").style.display = data.alerte ? "inline-block" : "none";
+  majPreview();
+}
+
+// ── Historique ─────────────────────────────────────────────────
+function afficherHistorique(lignes) {
+  const el = document.getElementById("histo-liste");
+  if (lignes.length === 0) {
+    el.innerHTML = '<div class="vide">Aucune utilisation enregistrée.</div>';
+    return;
+  }
+  el.innerHTML = lignes.map(l => {
+    const isRecup = l.type === "RECUP_POSEE";
+    return `
+      <div class="histo-row">
+        <div class="histo-icon">${isRecup ? "😴" : "💶"}</div>
+        <div class="histo-body">
+          <div class="histo-label" style="color:${isRecup ? "#27ae60" : "#575756"}">
+            ${isRecup ? "Récupération posée" : "Paiement demandé"}
+          </div>
+          ${l.detail ? `<div class="histo-detail">${l.detail}</div>` : ""}
+          ${l.commentaire ? `<div class="histo-comment">💬 ${l.commentaire}</div>` : ""}
+        </div>
+        <div class="histo-duree">${l.dureeH}</div>
+      </div>`;
+  }).join("");
 }
 
 // ── Semaines ───────────────────────────────────────────────────
 function afficherSemaines(semaines) {
-  const container = document.getElementById("semaines-scroll");
+  const el = document.getElementById("semaines-scroll");
   if (semaines.length === 0) {
-    container.innerHTML = '<div class="chargement">Aucune semaine enregistrée.</div>';
-    return;
+    el.innerHTML = '<div class="vide">Aucune semaine enregistrée.</div>'; return;
   }
-  container.innerHTML = semaines.map(s => {
+  el.innerHTML = semaines.map(s => {
     const hasDep = s.depassementMin > 0;
-    const badgeClass = hasDep ? "badge-dep" : "badge-ok";
-    const badgeTxt   = hasDep ? s.type + " · +" + s.depassementH : "Régulier";
-
-    const evtsHTML = s.evenements.map(ev => `
+    const evts   = s.evenements.map(ev => `
       <div class="event-row">
         <span class="event-date">${ev.date}</span>
         <span class="event-heure">${ev.heure}</span>
-        <span class="event-duree">${ev.dureeH}${ev.pauseDeduite
-          ? '<span class="event-pause">(-1h)</span>' : ''}</span>
+        <span class="event-duree">${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}</span>
       </div>
-      ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}
-    `).join("");
-
+      ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}`
+    ).join("");
     return `
       <div class="semaine-card ${hasDep ? "has-dep" : ""}">
         <div class="card-header">
           <div class="card-semaine">${s.semaine}</div>
-          <div class="card-badge ${badgeClass}">${badgeTxt}</div>
+          <div class="card-badge ${hasDep ? "badge-dep" : "badge-ok"}">
+            ${hasDep ? s.type + " · +" + s.depassementH : "Régulier"}
+          </div>
         </div>
         <div class="card-stats">
-          <div class="stat-item">
-            <div class="stat-val">${s.totalH}</div>
-            <div class="stat-lbl">travaillé</div>
-          </div>
+          <div class="stat-item"><div class="stat-val">${s.totalH}</div><div class="stat-lbl">travaillé</div></div>
           ${hasDep ? `
-          <div class="stat-item">
-            <div class="stat-val stat-dep">+${s.depassementH}</div>
-            <div class="stat-lbl">dépassement</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-val">${s.reposBrutH}</div>
-            <div class="stat-lbl">repos acquis</div>
-          </div>` : ""}
+          <div class="stat-item"><div class="stat-val stat-dep">+${s.depassementH}</div><div class="stat-lbl">dépassement</div></div>
+          <div class="stat-item"><div class="stat-val">${s.reposBrutH}</div><div class="stat-lbl">repos acquis</div></div>` : ""}
         </div>
-        <div class="card-events">${evtsHTML}</div>
-      </div>
-    `;
+        <div class="card-events">${evts}</div>
+      </div>`;
   }).join("");
 }
 
-// ── Mode récup / paiement ──────────────────────────────────────
+// ── Mode ────────────────────────────────────────────────────────
 function setMode(mode) {
   _mode = mode;
   document.getElementById("mode-recup").classList.toggle("active",    mode === "recup");
   document.getElementById("mode-paiement").classList.toggle("active", mode === "paiement");
-  document.getElementById("bloc-date").style.display = mode === "recup" ? "block" : "none";
-  document.getElementById("btn-valider-solde").textContent =
+  document.getElementById("bloc-recup").style.display    = mode === "recup"    ? "block" : "none";
+  document.getElementById("bloc-paiement").style.display = mode === "paiement" ? "block" : "none";
+  document.getElementById("btn-valider").textContent     =
     mode === "recup" ? "Confirmer la récupération" : "Demander le paiement";
-  majSoldeRestant();
+  document.getElementById("msg-inline").innerHTML = "";
+  majPreview();
 }
 
-function majSoldeRestant() {
-  const h = parseInt(document.getElementById("duree-h").value || "0", 10);
-  const m = parseInt(document.getElementById("duree-m").value || "0", 10);
-  const saisi    = h * 60 + m;
-  const restant  = _soldeMin - saisi;
-  const el       = document.getElementById("solde-restant");
-  if (saisi <= 0) {
-    el.innerHTML = "";
-    return;
-  }
-  if (restant < 0) {
-    el.innerHTML = "⚠️ Dépasse votre solde de <strong>" + minutesEnHHMM(-restant) + "</strong>";
-    el.style.color = "#e74c3c";
+// ── Aperçu durée + solde restant ──────────────────────────────
+function getDureeMin() {
+  if (_mode === "recup") {
+    const d = document.getElementById("heure-debut").value;
+    const f = document.getElementById("heure-fin").value;
+    if (!d || !f) return 0;
+    const [dh,dm] = d.split(":").map(Number);
+    const [fh,fm] = f.split(":").map(Number);
+    const diff = (fh*60+fm) - (dh*60+dm);
+    return diff > 0 ? diff : 0;
   } else {
-    el.innerHTML = "Solde restant après : <strong>" + minutesEnHHMM(restant) + "</strong>";
-    el.style.color = "";
+    const h = parseInt(document.getElementById("duree-h").value || "0", 10);
+    const m = parseInt(document.getElementById("duree-m").value || "0", 10);
+    return h * 60 + m;
+  }
+}
+
+function majPreview() {
+  const dureeMin = getDureeMin();
+  const el = document.getElementById("duree-preview");
+  if (dureeMin <= 0) { el.innerHTML = ""; return; }
+  const restant = _soldeMin - dureeMin;
+  if (restant < 0) {
+    el.innerHTML = `<span class="erreur">⚠️ Dépasse le solde de ${hhmm(-restant)}</span>`;
+  } else {
+    el.innerHTML = `Durée : <strong>${hhmm(dureeMin)}</strong> &nbsp;·&nbsp; Solde restant : <span class="reste">${hhmm(restant)}</span>`;
   }
 }
 
@@ -494,56 +517,70 @@ async function validerSolde() {
   const nom = document.getElementById("nom-compte").value;
   if (!nom) { alert("Choisissez votre nom"); return; }
 
-  const h = parseInt(document.getElementById("duree-h").value || "0", 10);
-  const m = parseInt(document.getElementById("duree-m").value || "0", 10);
-  const dureeMin = h * 60 + m;
-
-  if (dureeMin <= 0) { alert("Indiquez une durée."); return; }
-  if (dureeMin > _soldeMin) { alert("Durée supérieure à votre solde disponible."); return; }
+  const dureeMin = getDureeMin();
+  if (dureeMin <= 0) {
+    msgInline(_mode === "recup" ? "❌ Indiquez une plage horaire valide." : "❌ Indiquez une durée.", false);
+    return;
+  }
+  if (dureeMin > _soldeMin) {
+    msgInline("❌ Durée supérieure au solde disponible (" + hhmm(_soldeMin) + ").", false);
+    return;
+  }
 
   const commentaire = document.getElementById("comment-solde").value.trim();
-  const btn = document.getElementById("btn-valider-solde");
+  const btn = document.getElementById("btn-valider");
   btn.disabled = true; btn.textContent = "Envoi…";
 
   try {
     let url;
     if (_mode === "recup") {
-      const dateRecup = document.getElementById("date-recup").value;
-      if (!dateRecup) { alert("Indiquez la date de récupération."); btn.disabled = false; setMode("recup"); return; }
+      const date = document.getElementById("date-recup").value;
+      const hDeb = document.getElementById("heure-debut").value;
+      const hFin = document.getElementById("heure-fin").value;
+      if (!date) { msgInline("❌ Indiquez la date.", false); btn.disabled = false; btn.textContent = "Confirmer la récupération"; return; }
       url = SCRIPT_URL + "?action=poserRecup"
         + "&nom="        + enc(nom)
-        + "&dateRecup="  + enc(dateRecup)
-        + "&dureeMin="   + dureeMin
-        + "&commentaire=" + enc(commentaire);
+        + "&dateRecup="  + enc(date)
+        + "&heureDebut=" + enc(hDeb)
+        + "&heureFin="   + enc(hFin)
+        + "&commentaire="+ enc(commentaire);
     } else {
+      const h = parseInt(document.getElementById("duree-h").value || "0", 10);
+      const m = parseInt(document.getElementById("duree-m").value || "0", 10);
       url = SCRIPT_URL + "?action=demanderPaiement"
-        + "&nom="         + enc(nom)
-        + "&dureeMin="    + dureeMin
+        + "&nom="    + enc(nom)
+        + "&dureeH=" + h
+        + "&dureeM=" + m
         + "&commentaire=" + enc(commentaire);
     }
 
     const data = await fetchJSON(url);
     if (data.ok) {
-      // Mise à jour immédiate du solde
-      _soldeMin -= dureeMin;
-      document.getElementById("solde-valeur").textContent = minutesEnHHMM(_soldeMin);
-      document.getElementById("solde-alerte").style.display =
-        _soldeMin >= 420 ? "inline-block" : "none";
+      // Mise à jour locale immédiate
+      _soldeMin -= data.dureeMin || dureeMin;
+      document.getElementById("solde-valeur").textContent = hhmm(_soldeMin);
+      document.getElementById("solde-alerte").style.display = _soldeMin >= 420 ? "inline-block" : "none";
 
-      // Reset formulaire
-      document.getElementById("duree-h").value = "0";
-      document.getElementById("duree-m").value = "0";
+      // Reset champs
+      document.getElementById("heure-debut").value = "";
+      document.getElementById("heure-fin").value   = "";
+      document.getElementById("duree-h").value     = "0";
+      document.getElementById("duree-m").value     = "0";
       document.getElementById("comment-solde").value = "";
-      document.getElementById("date-recup").value = new Date().toISOString().split("T")[0];
-      document.getElementById("solde-restant").innerHTML = "";
+      document.getElementById("date-recup").value  = todayISO();
+      document.getElementById("duree-preview").innerHTML = "";
 
-      const action = _mode === "recup" ? "Récupération enregistrée ✅" : "Demande de paiement envoyée ✅";
-      affMsg("message-compte", action);
+      msgInline(_mode === "recup" ? "✅ Récupération enregistrée" : "✅ Demande de paiement envoyée", true);
+
+      // Recharger l'historique en arrière-plan
+      fetchJSON(SCRIPT_URL + "?action=getHistorique&nom=" + enc(nom))
+        .then(d => afficherHistorique(d.historique || []))
+        .catch(() => {});
     } else {
-      affMsg("message-compte", "❌ " + (data.error || "Erreur"));
+      msgInline("❌ " + (data.error || "Erreur"), false);
     }
   } catch {
-    affMsg("message-compte", "❌ Erreur réseau");
+    msgInline("❌ Erreur réseau", false);
   } finally {
     btn.disabled = false;
     btn.textContent = _mode === "recup" ? "Confirmer la récupération" : "Demander le paiement";
@@ -551,14 +588,20 @@ async function validerSolde() {
 }
 
 // ── Utilitaires ────────────────────────────────────────────────
-function minutesEnHHMM(min) {
+function msgInline(msg, ok) {
+  const el = document.getElementById("msg-inline");
+  el.innerHTML = msg;
+  el.style.color = ok ? "#27ae60" : "#e74c3c";
+  setTimeout(() => { el.innerHTML = ""; }, 6000);
+}
+function hhmm(min) {
   if (!min || min <= 0) return "0h00";
-  return Math.floor(min/60) + "h" + String(Math.round(min%60)).padStart(2, "0");
+  return Math.floor(min/60) + "h" + String(Math.round(min%60)).padStart(2,"0");
 }
 async function fetchJSON(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("HTTP " + res.status);
-  return res.json();
+  const r = await fetch(url);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
 }
 function affMsg(id, msg) {
   const el = document.getElementById(id);
