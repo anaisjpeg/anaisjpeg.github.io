@@ -228,7 +228,7 @@ input[type="text"], input[type="date"], select {
     </div>
     <p id="message"></p>
     <div id="spinner" class="spinner"></div>
-    <div class="info-encadre">Si vous faites des heures supplémentaires, précisez le motif dans le commentaire : il sera transmis à la direction pour validation.</div>
+    <div class="info-encadre">Si votre journée dépasse 7h de travail, un commentaire expliquant le motif est obligatoire avant de pointer la fin : il sera transmis à la direction pour validation.</div>
   </div>
 
   <!-- ══ MON COMPTE ════════════════════════════════════════ -->
@@ -340,10 +340,32 @@ window.onload = () => {
 function todayISO() { return new Date().toISOString().split("T")[0]; }
 
 // ══ POINTAGE ══════════════════════════════════════════════════
-function envoyer(type) {
+const SEUIL_COMMENTAIRE_OBLIGATOIRE_MIN = 7 * 60; // 7h (8h pointées - 1h pause)
+
+async function envoyer(type) {
   const nom         = document.getElementById("nom").value;
-  const commentaire = document.getElementById("commentaire").value;
+  const commentaire = document.getElementById("commentaire").value.trim();
   if (!nom) { alert("Choisissez votre nom"); return; }
+
+  // Si on pointe la fin, on vérifie la durée de la journée avant d'envoyer
+  if (type === "fin") {
+    try {
+      const data = await fetchJSON(SCRIPT_URL + "?action=getDernierDebut&nom=" + enc(nom));
+      if (data.ok && data.dernierDebut) {
+        const dureeMin = Math.round((Date.now() - data.dernierDebut) / 60000);
+        // On retire la pause d'1h si la durée brute la justifie (même règle que le calcul serveur)
+        const dureeNetteApprox = dureeMin > 5 * 60 ? dureeMin - 60 : dureeMin;
+        if (dureeNetteApprox > SEUIL_COMMENTAIRE_OBLIGATOIRE_MIN && !commentaire) {
+          affMsg("message", "⚠️ Vous avez dépassé 7h de travail aujourd'hui : merci de préciser le motif dans le commentaire avant de valider.");
+          document.getElementById("commentaire").focus();
+          return;
+        }
+      }
+    } catch {
+      // En cas d'erreur réseau sur cette vérification, on laisse passer le pointage normalement
+    }
+  }
+
   const btns = document.querySelectorAll(".btn-pointage");
   const spin = document.getElementById("spinner");
   btns.forEach(b => b.disabled = true); spin.style.display = "block";
