@@ -24,8 +24,6 @@ body { font-family: Arial, sans-serif; background-color: #f9f5f0; margin: 0; pad
 }
 .section { display: none; }
 .section.active { display: block; }
-
-/* Originaux */
 .logo { max-width: 120px; margin-bottom: 15px; }
 h2 { color: #575756; margin-bottom: 20px; }
 input[type="text"], input[type="date"], select {
@@ -50,28 +48,24 @@ input[type="text"], input[type="date"], select {
 @keyframes spin { 100% { transform: rotate(360deg); } }
 #message { margin-top: 15px; line-height: 1.3; font-weight: bold; color: #ED6A32; }
 
-/* Mon compte */
 .section-label {
   color: #575756; font-size: 12px; font-weight: bold;
   text-transform: uppercase; letter-spacing: 0.6px;
   text-align: left; margin: 22px 0 8px;
 }
-.solde-bloc {
-  background: #f9f5f0; border-radius: 10px;
-  padding: 18px 12px; text-align: center;
-}
+.solde-bloc { background: #f9f5f0; border-radius: 10px; padding: 18px 12px; text-align: center; }
 .solde-valeur { font-size: 38px; font-weight: bold; color: #575756; }
 .solde-unit   { font-size: 14px; color: #aaa; margin-top: 2px; }
 .solde-alerte {
   margin-top: 8px; font-size: 13px; font-weight: bold; color: #ED6A32;
   padding: 6px 10px; background: #fdf3ee; border-radius: 6px; display: inline-block;
 }
-
-/* Formulaire */
-.form-bloc {
-  border: 2px solid #e8e0d8; border-radius: 10px;
-  padding: 16px; text-align: left;
+.solde-attente {
+  margin-top: 8px; font-size: 12px; color: #b07800;
+  padding: 6px 10px; background: #fef3cd; border-radius: 6px; display: inline-block;
 }
+
+.form-bloc { border: 2px solid #e8e0d8; border-radius: 10px; padding: 16px; text-align: left; }
 .form-bloc-title { font-size: 13px; font-weight: bold; color: #575756; margin-bottom: 14px; }
 .mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
 .mode-btn {
@@ -82,27 +76,21 @@ input[type="text"], input[type="date"], select {
 .mode-btn:hover  { border-color: #ED6A32; }
 .mode-btn.active { border-color: #ED6A32; color: #ED6A32; background: #fdf3ee; }
 .mode-btn span   { display: block; font-size: 18px; margin-bottom: 3px; }
-
 .field-label {
-  font-size: 12px; font-weight: bold; color: #aaa;
-  margin: 10px 0 4px; display: block;
+  font-size: 12px; font-weight: bold; color: #aaa; margin: 10px 0 4px; display: block;
   text-transform: uppercase; letter-spacing: 0.4px;
 }
 .input-full {
   width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
   box-sizing: border-box; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 4px;
 }
-/* Plage horaire */
-.plage-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 4px;
-}
+.plage-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 4px; }
 .plage-row label { display: block; font-size: 11px; color: #aaa; font-weight: bold; margin-bottom: 4px; }
 .plage-row input[type="time"] {
   width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
   font-size: 15px; text-align: center; box-sizing: border-box;
   font-family: Arial, sans-serif; margin: 0;
 }
-/* Durée paiement */
 .duree-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 4px; }
 .duree-row label { display: block; font-size: 11px; color: #aaa; font-weight: bold; margin-bottom: 4px; }
 .duree-row input[type="number"] {
@@ -110,7 +98,6 @@ input[type="text"], input[type="date"], select {
   font-size: 15px; text-align: center; box-sizing: border-box;
   font-family: Arial, sans-serif; margin: 0;
 }
-/* Aperçu durée + solde restant */
 .duree-preview {
   font-size: 12px; color: #aaa; text-align: center;
   background: #f9f5f0; border-radius: 6px; padding: 6px 10px;
@@ -119,7 +106,6 @@ input[type="text"], input[type="date"], select {
 .duree-preview strong { color: #575756; }
 .duree-preview .reste { color: #ED6A32; }
 .duree-preview .erreur { color: #e74c3c; }
-
 .btn-action {
   width: 100%; padding: 13px; border: none; border-radius: 8px;
   font-size: 15px; font-weight: bold; cursor: pointer; color: white;
@@ -128,14 +114,8 @@ input[type="text"], input[type="date"], select {
 }
 .btn-action:hover    { opacity: 0.9; }
 .btn-action:disabled { opacity: 0.5; cursor: default; }
+.msg-inline { font-size: 14px; font-weight: bold; text-align: center; margin: 8px 0 0; min-height: 20px; }
 
-/* Message inline juste sous le bouton */
-.msg-inline {
-  font-size: 14px; font-weight: bold; text-align: center;
-  margin: 8px 0 0; min-height: 20px;
-}
-
-/* Historique */
 .histo-liste { margin: 0; }
 .histo-row {
   display: flex; align-items: flex-start; gap: 10px;
@@ -147,12 +127,16 @@ input[type="text"], input[type="date"], select {
 .histo-label { font-size: 13px; font-weight: bold; }
 .histo-detail { font-size: 12px; color: #888; margin-top: 1px; }
 .histo-comment { font-size: 11px; color: #aaa; font-style: italic; margin-top: 2px; }
-.histo-duree { font-size: 14px; font-weight: bold; color: #ED6A32; flex-shrink: 0; }
-
-/* Semaines */
-.semaines-scroll {
-  max-height: 360px; overflow-y: auto; margin: 0 -2px; padding: 0 2px 2px;
+.histo-duree { font-size: 14px; font-weight: bold; color: #ED6A32; flex-shrink: 0; text-align: right; }
+.histo-statut {
+  font-size: 10px; font-weight: bold; padding: 2px 6px;
+  border-radius: 10px; display: inline-block; margin-top: 3px;
 }
+.statut-attente { background: #fef3cd; color: #b07800; }
+.statut-valide  { background: #eafaf1; color: #27ae60; }
+.statut-refuse  { background: #fdecea; color: #e74c3c; }
+
+.semaines-scroll { max-height: 360px; overflow-y: auto; margin: 0 -2px; padding: 0 2px 2px; }
 .semaines-scroll::-webkit-scrollbar { width: 4px; }
 .semaines-scroll::-webkit-scrollbar-track { background: #f0ebe4; border-radius: 4px; }
 .semaines-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -170,24 +154,31 @@ input[type="text"], input[type="date"], select {
   font-size: 11px; font-weight: bold; padding: 3px 8px;
   border-radius: 20px; white-space: nowrap; flex-shrink: 0;
 }
-.badge-ok  { background: #eaf7ee; color: #27ae60; }
-.badge-dep { background: #fdf3ee; color: #ED6A32; }
-.card-stats { padding: 0 14px 8px; display: flex; gap: 16px; }
-.stat-item  { flex: 1; }
+.badge-ok      { background: #eaf7ee; color: #27ae60; }
+.badge-dep     { background: #fdf3ee; color: #ED6A32; }
+.badge-attente { background: #fef3cd; color: #b07800; }
+.badge-refuse  { background: #fdecea; color: #e74c3c; }
+.card-stats { padding: 0 14px 8px; display: flex; gap: 16px; flex-wrap: wrap; }
+.stat-item  { flex: 1; min-width: 70px; }
 .stat-val   { font-size: 15px; font-weight: bold; color: #575756; }
 .stat-dep   { color: #ED6A32; }
 .stat-lbl   { font-size: 11px; color: #aaa; margin-top: 1px; }
+.recup-note {
+  margin: 0 14px 8px; padding: 6px 10px;
+  background: #eaf7ee; border-radius: 6px;
+  font-size: 11px; color: #27ae60; font-weight: bold;
+}
 .card-events { border-top: 1px solid #f0ebe4; padding: 6px 14px 8px; }
 .event-row {
   display: flex; justify-content: space-between; align-items: baseline;
-  padding: 2px 0; font-size: 12px; color: #777;
-  border-bottom: 1px solid #f9f5f0;
+  padding: 2px 0; font-size: 12px; color: #777; border-bottom: 1px solid #f9f5f0;
 }
 .event-row:last-child { border-bottom: none; }
 .event-date  { font-weight: bold; color: #575756; min-width: 72px; }
 .event-heure { flex: 1; padding: 0 6px; }
 .event-duree { color: #ED6A32; font-weight: bold; white-space: nowrap; }
 .event-pause { font-size: 10px; color: #bbb; margin-left: 3px; }
+.event-alerte { font-size: 12px; margin-left: 4px; }
 .event-comment { font-size: 11px; color: #aaa; font-style: italic; padding: 1px 0 3px; }
 
 .btn-voir-solde {
@@ -204,6 +195,10 @@ input[type="text"], input[type="date"], select {
 }
 .chargement { color: #aaa; font-size: 14px; padding: 20px 0; text-align: center; }
 .vide       { color: #bbb; font-size: 13px; padding: 12px 0; text-align: center; font-style: italic; }
+.info-encadre {
+  font-size: 11px; color: #aaa; text-align: center;
+  margin-top: 8px; line-height: 1.4;
+}
 </style>
 </head>
 <body>
@@ -233,6 +228,7 @@ input[type="text"], input[type="date"], select {
     </div>
     <p id="message"></p>
     <div id="spinner" class="spinner"></div>
+    <div class="info-encadre">Si vous faites des heures supplémentaires, précisez le motif dans le commentaire : il sera transmis à la direction pour validation.</div>
   </div>
 
   <!-- ══ MON COMPTE ════════════════════════════════════════ -->
@@ -254,10 +250,11 @@ input[type="text"], input[type="date"], select {
       <div class="section-label" style="margin-top:18px">Solde de repos disponible</div>
       <div class="solde-bloc">
         <div class="solde-valeur" id="solde-valeur">—</div>
-        <div class="solde-unit">heures disponibles</div>
+        <div class="solde-unit">heures disponibles (validées)</div>
         <div class="solde-alerte" id="solde-alerte" style="display:none">
           ⚠️ Seuil 7h atteint — à poser dans les 2 mois
         </div>
+        <div class="solde-attente" id="solde-attente" style="display:none"></div>
       </div>
 
       <!-- 2. Utiliser mon solde -->
@@ -273,48 +270,32 @@ input[type="text"], input[type="date"], select {
           </button>
         </div>
 
-        <!-- MODE RÉCUP -->
         <div id="bloc-recup">
           <span class="field-label">Date</span>
           <input type="date" id="date-recup" class="input-full">
-
           <span class="field-label">Plage horaire</span>
           <div class="plage-row">
-            <div>
-              <label>De</label>
-              <input type="time" id="heure-debut" oninput="majPreview()">
-            </div>
-            <div>
-              <label>À</label>
-              <input type="time" id="heure-fin" oninput="majPreview()">
-            </div>
+            <div><label>De</label><input type="time" id="heure-debut" oninput="majPreview()"></div>
+            <div><label>À</label><input type="time" id="heure-fin" oninput="majPreview()"></div>
           </div>
         </div>
 
-        <!-- MODE PAIEMENT -->
         <div id="bloc-paiement" style="display:none">
           <span class="field-label">Durée à payer</span>
           <div class="duree-row">
-            <div><label>Heures</label>
-              <input type="number" id="duree-h" min="0" max="99" value="0" oninput="majPreview()">
-            </div>
-            <div><label>Minutes</label>
-              <input type="number" id="duree-m" min="0" max="59" value="0" oninput="majPreview()">
-            </div>
+            <div><label>Heures</label><input type="number" id="duree-h" min="0" max="99" value="0" oninput="majPreview()"></div>
+            <div><label>Minutes</label><input type="number" id="duree-m" min="0" max="59" value="0" oninput="majPreview()"></div>
           </div>
         </div>
 
-        <!-- Aperçu durée + solde restant -->
         <div class="duree-preview" id="duree-preview"></div>
 
         <span class="field-label">Commentaire <span style="font-weight:normal">(facultatif)</span></span>
         <input type="text" id="comment-solde" class="input-full" placeholder="">
 
-        <button class="btn-action" id="btn-valider" onclick="validerSolde()">
-          Confirmer la récupération
-        </button>
-        <!-- ✅ Message inline immédiatement sous le bouton -->
+        <button class="btn-action" id="btn-valider" onclick="validerSolde()">Confirmer la récupération</button>
         <div class="msg-inline" id="msg-inline"></div>
+        <div class="info-encadre">Cette demande sera soumise à la direction pour validation avant d'être déduite définitivement de votre solde.</div>
       </div>
 
       <!-- 3. Historique -->
@@ -338,6 +319,7 @@ input[type="text"], input[type="date"], select {
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
 let _soldeMin = 0;
 let _mode     = "recup";
+let _histoData = []; // pour retrouver les récup VALIDÉES par semaine
 
 // ── Tabs ───────────────────────────────────────────────────────
 function switchTab(tab) {
@@ -355,7 +337,6 @@ window.onload = () => {
   }
   document.getElementById("date-recup").value = todayISO();
 };
-
 function todayISO() { return new Date().toISOString().split("T")[0]; }
 
 // ══ POINTAGE ══════════════════════════════════════════════════
@@ -393,8 +374,9 @@ async function chargerCompte() {
       fetchJSON(SCRIPT_URL + "?action=getSemaines&nom="   + enc(nom)),
       fetchJSON(SCRIPT_URL + "?action=getHistorique&nom=" + enc(nom)),
     ]);
+    _histoData = histData.historique || [];
     afficherSolde(soldeData);
-    afficherHistorique(histData.historique || []);
+    afficherHistorique(_histoData);
     afficherSemaines(semData.semaines || []);
     document.getElementById("compte-content").style.display = "block";
   } catch(err) {
@@ -408,6 +390,20 @@ function afficherSolde(data) {
   _soldeMin = data.soldeMin || 0;
   document.getElementById("solde-valeur").textContent = hhmm(_soldeMin);
   document.getElementById("solde-alerte").style.display = data.alerte ? "inline-block" : "none";
+
+  const attenteEl = document.getElementById("solde-attente");
+  const hasAttenteHS  = data.enAttenteHSH  && data.enAttenteHSH  !== "0h00";
+  const hasAttenteMvt = data.enAttenteMvtH && data.enAttenteMvtH !== "0h00";
+  if (hasAttenteHS || hasAttenteMvt) {
+    let txt = "⏳ En attente de validation : ";
+    const parts = [];
+    if (hasAttenteHS)  parts.push(data.enAttenteHSH + " d'heures sup");
+    if (hasAttenteMvt) parts.push(data.enAttenteMvtH + " de récup/paiement");
+    attenteEl.textContent = txt + parts.join(" + ");
+    attenteEl.style.display = "inline-block";
+  } else {
+    attenteEl.style.display = "none";
+  }
   majPreview();
 }
 
@@ -420,6 +416,8 @@ function afficherHistorique(lignes) {
   }
   el.innerHTML = lignes.map(l => {
     const isRecup = l.type === "RECUP_POSEE";
+    const statutClass = l.statut === "VALIDE" ? "statut-valide" : l.statut === "REFUSE" ? "statut-refuse" : "statut-attente";
+    const statutTxt   = l.statut === "VALIDE" ? "✅ Validé" : l.statut === "REFUSE" ? "❌ Refusé" : "⏳ En attente";
     return `
       <div class="histo-row">
         <div class="histo-icon">${isRecup ? "😴" : "💶"}</div>
@@ -429,6 +427,7 @@ function afficherHistorique(lignes) {
           </div>
           ${l.detail ? `<div class="histo-detail">${l.detail}</div>` : ""}
           ${l.commentaire ? `<div class="histo-comment">💬 ${l.commentaire}</div>` : ""}
+          <div class="histo-statut ${statutClass}">${statutTxt}</div>
         </div>
         <div class="histo-duree">${l.dureeH}</div>
       </div>`;
@@ -441,30 +440,63 @@ function afficherSemaines(semaines) {
   if (semaines.length === 0) {
     el.innerHTML = '<div class="vide">Aucune semaine enregistrée.</div>'; return;
   }
+
+  // Retrouver les récup VALIDÉES dont la plage tombe dans la semaine (pour affichage "2h de récup posées")
+  function recupValideesPourSemaine(lundiISO) {
+    // On matche sur le préfixe de date dans le detail "JJ/MM/AAAA HH:MM–HH:MM"
+    // En l'absence de date ISO stockée, on se contente d'agréger les récup VALIDÉES
+    // dont la date FR tombe dans la semaine du lundi au dimanche.
+    const lundi = new Date(lundiISO);
+    const dimanche = new Date(lundi); dimanche.setDate(dimanche.getDate() + 6);
+    let total = 0;
+    for (const h of _histoData) {
+      if (h.type !== "RECUP_POSEE" || h.statut !== "VALIDE" || !h.detail) continue;
+      const m = h.detail.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+      if (!m) continue;
+      const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+      if (d >= lundi && d <= dimanche) {
+        const [hh, mm] = h.dureeH.replace("h", ":").split(":").map(Number);
+        total += hh * 60 + (mm || 0);
+      }
+    }
+    return total;
+  }
+
   el.innerHTML = semaines.map(s => {
     const hasDep = s.depassementMin > 0;
-    const evts   = s.evenements.map(ev => `
+    let badgeClass = "badge-ok", badgeTxt = "Régulier";
+    if (hasDep) {
+      if (s.statutHS === "VALIDE") { badgeClass = "badge-dep";     badgeTxt = s.type + " · +" + s.depassementH + " validé"; }
+      else if (s.statutHS === "REFUSE") { badgeClass = "badge-refuse"; badgeTxt = s.type + " refusé"; }
+      else { badgeClass = "badge-attente"; badgeTxt = s.type + " · en attente"; }
+    }
+
+    const recupMin = recupValideesPourSemaine(s.lundi);
+    const recupNote = recupMin > 0
+      ? `<div class="recup-note">😴 ${hhmm(recupMin)} de récupération posée cette semaine</div>` : "";
+
+    const evts = s.evenements.map(ev => `
       <div class="event-row">
         <span class="event-date">${ev.date}</span>
         <span class="event-heure">${ev.heure}</span>
-        <span class="event-duree">${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}</span>
+        <span class="event-duree">${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}${ev.alerteJournee ? '<span class="event-alerte">⚠️</span>' : ''}</span>
       </div>
       ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}`
     ).join("");
+
     return `
       <div class="semaine-card ${hasDep ? "has-dep" : ""}">
         <div class="card-header">
           <div class="card-semaine">${s.semaine}</div>
-          <div class="card-badge ${hasDep ? "badge-dep" : "badge-ok"}">
-            ${hasDep ? s.type + " · +" + s.depassementH : "Régulier"}
-          </div>
+          <div class="card-badge ${badgeClass}">${badgeTxt}</div>
         </div>
         <div class="card-stats">
           <div class="stat-item"><div class="stat-val">${s.totalH}</div><div class="stat-lbl">travaillé</div></div>
           ${hasDep ? `
           <div class="stat-item"><div class="stat-val stat-dep">+${s.depassementH}</div><div class="stat-lbl">dépassement</div></div>
-          <div class="stat-item"><div class="stat-val">${s.reposBrutH}</div><div class="stat-lbl">repos acquis</div></div>` : ""}
+          <div class="stat-item"><div class="stat-val">${s.reposBrutH}</div><div class="stat-lbl">repos correspondant</div></div>` : ""}
         </div>
+        ${recupNote}
         <div class="card-events">${evts}</div>
       </div>`;
   }).join("");
@@ -476,14 +508,13 @@ function setMode(mode) {
   document.getElementById("mode-recup").classList.toggle("active",    mode === "recup");
   document.getElementById("mode-paiement").classList.toggle("active", mode === "paiement");
   document.getElementById("bloc-recup").style.display    = mode === "recup"    ? "block" : "none";
-  document.getElementById("bloc-paiement").style.display = mode === "paiement" ? "block" : "none";
-  document.getElementById("btn-valider").textContent     =
+  document.getElementById("bloc-paiement").style.display  = mode === "paiement" ? "block" : "none";
+  document.getElementById("btn-valider").textContent      =
     mode === "recup" ? "Confirmer la récupération" : "Demander le paiement";
   document.getElementById("msg-inline").innerHTML = "";
   majPreview();
 }
 
-// ── Aperçu durée + solde restant ──────────────────────────────
 function getDureeMin() {
   if (_mode === "recup") {
     const d = document.getElementById("heure-debut").value;
@@ -508,11 +539,11 @@ function majPreview() {
   if (restant < 0) {
     el.innerHTML = `<span class="erreur">⚠️ Dépasse le solde de ${hhmm(-restant)}</span>`;
   } else {
-    el.innerHTML = `Durée : <strong>${hhmm(dureeMin)}</strong> &nbsp;·&nbsp; Solde restant : <span class="reste">${hhmm(restant)}</span>`;
+    el.innerHTML = `Durée : <strong>${hhmm(dureeMin)}</strong> &nbsp;·&nbsp; Solde restant si validé : <span class="reste">${hhmm(restant)}</span>`;
   }
 }
 
-// ── Validation ─────────────────────────────────────────────────
+// ── Validation (soumission, pas validation finale) ─────────────
 async function validerSolde() {
   const nom = document.getElementById("nom-compte").value;
   if (!nom) { alert("Choisissez votre nom"); return; }
@@ -556,12 +587,8 @@ async function validerSolde() {
 
     const data = await fetchJSON(url);
     if (data.ok) {
-      // Mise à jour locale immédiate
-      _soldeMin -= data.dureeMin || dureeMin;
-      document.getElementById("solde-valeur").textContent = hhmm(_soldeMin);
-      document.getElementById("solde-alerte").style.display = _soldeMin >= 420 ? "inline-block" : "none";
-
-      // Reset champs
+      // Le solde validé ne change pas tout de suite : la demande est EN_ATTENTE.
+      // On rafraîchit juste l'indicateur "en attente" et l'historique.
       document.getElementById("heure-debut").value = "";
       document.getElementById("heure-fin").value   = "";
       document.getElementById("duree-h").value     = "0";
@@ -570,12 +597,18 @@ async function validerSolde() {
       document.getElementById("date-recup").value  = todayISO();
       document.getElementById("duree-preview").innerHTML = "";
 
-      msgInline(_mode === "recup" ? "✅ Récupération enregistrée" : "✅ Demande de paiement envoyée", true);
+      msgInline(_mode === "recup"
+        ? "✅ Demande envoyée — en attente de validation par la direction"
+        : "✅ Demande de paiement envoyée — en attente de validation", true);
 
-      // Recharger l'historique en arrière-plan
-      fetchJSON(SCRIPT_URL + "?action=getHistorique&nom=" + enc(nom))
-        .then(d => afficherHistorique(d.historique || []))
-        .catch(() => {});
+      // Recharger solde (pour le bandeau "en attente") + historique
+      const [soldeData, histData] = await Promise.all([
+        fetchJSON(SCRIPT_URL + "?action=getSolde&nom="      + enc(nom)),
+        fetchJSON(SCRIPT_URL + "?action=getHistorique&nom=" + enc(nom)),
+      ]);
+      _histoData = histData.historique || [];
+      afficherSolde(soldeData);
+      afficherHistorique(_histoData);
     } else {
       msgInline("❌ " + (data.error || "Erreur"), false);
     }
