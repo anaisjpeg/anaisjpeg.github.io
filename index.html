@@ -501,7 +501,7 @@ function afficherSemaines(semaines) {
       <div class="event-row">
         <span class="event-date">${ev.date}</span>
         <span class="event-heure">${ev.heure}</span>
-        <span class="event-duree">${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}${ev.alerteJournee ? '<span class="event-alerte">⚠️</span>' : ''}</span>
+        <span class="event-duree">${ev.alerteJournee ? '<span class="event-alerte">⚠️</span>' : ''}${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}</span>
       </div>
       ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}`
     ).join("");
