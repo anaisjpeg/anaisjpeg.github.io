@@ -228,6 +228,7 @@ input[type="text"], input[type="date"], select {
     </div>
     <p id="message"></p>
     <div id="spinner" class="spinner"></div>
+    <div class="info-encadre">Si votre journée dépasse 7h de travail, un commentaire expliquant le motif est obligatoire avant de pointer la fin : il sera transmis à la direction pour validation.</div>
   </div>
 
   <!-- ══ MON COMPTE ════════════════════════════════════════ -->
@@ -418,7 +419,7 @@ function afficherSolde(data) {
   if (hasAttenteHS || hasAttenteMvt) {
     let txt = "⏳ En attente de validation : ";
     const parts = [];
-    if (hasAttenteHS)  parts.push(data.enAttenteHSH + " d'heures sup");
+    if (hasAttenteHS)  parts.push(data.enAttenteHSH + " d'heures " + (data.typeLabel || "supplémentaires/complémentaires"));
     if (hasAttenteMvt) parts.push(data.enAttenteMvtH + " de récup/paiement");
     attenteEl.textContent = txt + parts.join(" + ");
     attenteEl.style.display = "inline-block";
@@ -496,14 +497,33 @@ function afficherSemaines(semaines) {
     const recupNote = recupMin > 0
       ? `<div class="recup-note">😴 ${hhmm(recupMin)} de récupération posée cette semaine</div>` : "";
 
-    const evts = s.evenements.map(ev => `
+    // Récup validées par date (format JJ/MM/AAAA) pour annoter les journées courtes
+    const recupParJour = {};
+    for (const h of _histoData) {
+      if (h.type !== "RECUP_POSEE" || h.statut !== "VALIDE" || !h.detail) continue;
+      const m = h.detail.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+      if (!m) continue;
+      const dateStr = m[0]; // "JJ/MM/AAAA"
+      const parts = h.dureeH.split("h");
+      const mins = parseInt(parts[0]||0)*60 + parseInt(parts[1]||0);
+      recupParJour[dateStr] = (recupParJour[dateStr] || 0) + mins;
+    }
+
+    const evts = s.evenements.map(ev => {
+      const recupCeJour = recupParJour[ev.date] || 0;
+      // ⚠️ seulement si journée courte ET pas de récup posée ce jour-là
+      const showAlerte = ev.alerteJournee && recupCeJour === 0;
+      const recupNote  = recupCeJour > 0
+        ? `<div class="event-comment" style="color:#27ae60;font-style:normal">😴 Récup posée : ${hhmm(recupCeJour)}</div>` : "";
+      return `
       <div class="event-row">
         <span class="event-date">${ev.date}</span>
         <span class="event-heure">${ev.heure}</span>
-        <span class="event-duree">${ev.alerteJournee ? '<span class="event-alerte">⚠️</span>' : ''}${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}</span>
+        <span class="event-duree">${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}${showAlerte ? '<span class="event-alerte"> ⚠️</span>' : ''}</span>
       </div>
-      ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}`
-    ).join("");
+      ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}
+      ${recupNote}`;
+    }).join("");
 
     return `
       <div class="semaine-card ${hasDep ? "has-dep" : ""}">
