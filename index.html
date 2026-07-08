@@ -463,26 +463,6 @@ function afficherSemaines(semaines) {
     el.innerHTML = '<div class="vide">Aucune semaine enregistrée.</div>'; return;
   }
 
-  // Retrouver les récup VALIDÉES dont la plage tombe dans la semaine (pour affichage "2h de récup posées")
-  function recupValideesPourSemaine(lundiISO) {
-    // On matche sur le préfixe de date dans le detail "JJ/MM/AAAA HH:MM–HH:MM"
-    // En l'absence de date ISO stockée, on se contente d'agréger les récup VALIDÉES
-    // dont la date FR tombe dans la semaine du lundi au dimanche.
-    const lundi = new Date(lundiISO);
-    const dimanche = new Date(lundi); dimanche.setDate(dimanche.getDate() + 6);
-    let total = 0;
-    for (const h of _histoData) {
-      if (h.type !== "RECUP_POSEE" || h.statut !== "VALIDE" || !h.detail) continue;
-      const m = h.detail.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-      if (!m) continue;
-      const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
-      if (d >= lundi && d <= dimanche) {
-        const [hh, mm] = h.dureeH.replace("h", ":").split(":").map(Number);
-        total += hh * 60 + (mm || 0);
-      }
-    }
-    return total;
-  }
 
   el.innerHTML = semaines.map(s => {
     const hasDep = s.depassementMin > 0;
@@ -493,9 +473,8 @@ function afficherSemaines(semaines) {
       else { badgeClass = "badge-attente"; badgeTxt = s.type + " · en attente"; }
     }
 
-    const recupMin = recupValideesPourSemaine(s.lundi);
-    const recupNote = recupMin > 0
-      ? `<div class="recup-note">😴 ${hhmm(recupMin)} de récupération posée cette semaine</div>` : "";
+    const recupMin = 0; // info récup maintenant affichée par jour directement
+    const recupNote = "";
 
     // Récup validées par date (format JJ/MM/AAAA) pour annoter les journées courtes
     const recupParJour = {};
@@ -514,12 +493,16 @@ function afficherSemaines(semaines) {
       // ⚠️ seulement si journée courte ET pas de récup posée ce jour-là
       const showAlerte = ev.alerteJournee && recupCeJour === 0;
       const recupNote  = recupCeJour > 0
-        ? `<div class="event-comment" style="color:#27ae60;font-style:normal">😴 Récup posée : ${hhmm(recupCeJour)}</div>` : "";
+        ? `<div class="event-row" style="border-bottom:none;padding-top:0">
+             <span class="event-date" style="color:#27ae60;font-style:italic">😴 récup</span>
+             <span class="event-heure"></span>
+             <span class="event-duree" style="color:#27ae60">${hhmm(recupCeJour)}</span>
+           </div>` : "";
       return `
       <div class="event-row">
         <span class="event-date">${ev.date}</span>
         <span class="event-heure">${ev.heure}</span>
-        <span class="event-duree">${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}${showAlerte ? '<span class="event-alerte"> ⚠️</span>' : ''}</span>
+        <span class="event-duree">${showAlerte ? '<span class="event-alerte">⚠️ </span>' : ''}${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}</span>
       </div>
       ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}
       ${recupNote}`;
