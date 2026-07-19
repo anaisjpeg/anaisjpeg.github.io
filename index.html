@@ -31,15 +31,23 @@ input[type="text"], input[type="date"], select {
   border-radius: 8px; border: 1px solid #ccc;
   box-sizing: border-box; font-family: Arial, sans-serif; font-size: 14px;
 }
-.btn-pointage {
-  width: 45%; padding: 12px; margin: 10px 5px; border: none;
-  border-radius: 8px; font-size: 16px; cursor: pointer; color: white;
-  font-family: Arial, sans-serif;
+.pointage-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin: 14px 0 6px;
 }
-.btn-pointage:hover    { opacity: 0.9; }
-.btn-pointage:disabled { opacity: 0.5; cursor: default; }
+.btn-pointage {
+  padding: 14px 6px; border: none;
+  border-radius: 8px; font-size: 14px; cursor: pointer; color: white;
+  font-family: Arial, sans-serif; line-height: 1.3; transition: opacity 0.2s;
+}
+.btn-pointage:hover:not(:disabled) { opacity: 0.9; }
+.btn-pointage:disabled { opacity: 0.35; cursor: default; }
 .debut { background-color: #ED6A32; }
 .fin   { background-color: #575756; }
+.etat-jour {
+  font-size: 12.5px; color: #888; background: #f9f5f0;
+  border-radius: 8px; padding: 8px 10px; margin-top: 4px;
+}
 .spinner {
   border: 4px solid #f3f3f3; border-top: 4px solid #ED6A32;
   border-radius: 50%; width: 20px; height: 20px;
@@ -47,7 +55,6 @@ input[type="text"], input[type="date"], select {
 }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 #message { margin-top: 15px; line-height: 1.3; font-weight: bold; color: #ED6A32; }
-
 .section-label {
   color: #575756; font-size: 12px; font-weight: bold;
   text-transform: uppercase; letter-spacing: 0.6px;
@@ -64,7 +71,6 @@ input[type="text"], input[type="date"], select {
   margin-top: 8px; font-size: 12px; color: #b07800;
   padding: 6px 10px; background: #fef3cd; border-radius: 6px; display: inline-block;
 }
-
 .form-bloc { border: 2px solid #e8e0d8; border-radius: 10px; padding: 16px; text-align: left; }
 .form-bloc-title { font-size: 13px; font-weight: bold; color: #575756; margin-bottom: 14px; }
 .mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
@@ -115,7 +121,6 @@ input[type="text"], input[type="date"], select {
 .btn-action:hover    { opacity: 0.9; }
 .btn-action:disabled { opacity: 0.5; cursor: default; }
 .msg-inline { font-size: 14px; font-weight: bold; text-align: center; margin: 8px 0 0; min-height: 20px; }
-
 .histo-liste { margin: 0; }
 .histo-row {
   display: flex; align-items: flex-start; gap: 10px;
@@ -135,7 +140,6 @@ input[type="text"], input[type="date"], select {
 .statut-attente { background: #fef3cd; color: #b07800; }
 .statut-valide  { background: #eafaf1; color: #27ae60; }
 .statut-refuse  { background: #fdecea; color: #e74c3c; }
-
 .semaines-scroll { max-height: 360px; overflow-y: auto; margin: 0 -2px; padding: 0 2px 2px; }
 .semaines-scroll::-webkit-scrollbar { width: 4px; }
 .semaines-scroll::-webkit-scrollbar-track { background: #f0ebe4; border-radius: 4px; }
@@ -163,11 +167,6 @@ input[type="text"], input[type="date"], select {
 .stat-val   { font-size: 15px; font-weight: bold; color: #575756; }
 .stat-dep   { color: #ED6A32; }
 .stat-lbl   { font-size: 11px; color: #aaa; margin-top: 1px; }
-.recup-note {
-  margin: 0 14px 8px; padding: 6px 10px;
-  background: #eaf7ee; border-radius: 6px;
-  font-size: 11px; color: #27ae60; font-weight: bold;
-}
 .card-events { border-top: 1px solid #f0ebe4; padding: 6px 14px 8px; }
 .event-row {
   display: flex; justify-content: space-between; align-items: baseline;
@@ -177,10 +176,15 @@ input[type="text"], input[type="date"], select {
 .event-date  { font-weight: bold; color: #575756; min-width: 72px; }
 .event-heure { flex: 1; padding: 0 6px; }
 .event-duree { color: #ED6A32; font-weight: bold; white-space: nowrap; }
-.event-pause { font-size: 10px; color: #bbb; margin-left: 3px; }
 .event-alerte { font-size: 12px; margin-left: 4px; }
 .event-comment { font-size: 11px; color: #aaa; font-style: italic; padding: 1px 0 3px; }
-
+/* Ligne "récup" volontairement différente des .event-row : pas de colonnes alignées,
+   juste l'icône + le libellé + la durée regroupés à gauche */
+.event-recup-row {
+  display: flex; align-items: baseline; gap: 6px;
+  padding: 3px 0 4px; font-size: 12px; color: #27ae60; font-style: italic;
+}
+.event-recup-duree { font-weight: bold; font-style: normal; }
 .btn-voir-solde {
   width: 90%; padding: 13px; margin: 10px 0 4px; border: none;
   border-radius: 8px; font-size: 15px; font-weight: bold;
@@ -202,19 +206,16 @@ input[type="text"], input[type="date"], select {
 </style>
 </head>
 <body>
-
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('pointage')">Pointage</button>
   <button class="tab-btn"        onclick="switchTab('compte')">Mon compte</button>
 </div>
-
 <div class="container">
-
   <!-- ══ POINTAGE ═══════════════════════════════════════════ -->
   <div class="section active" id="tab-pointage">
     <img src="logo.png" class="logo">
     <h2>Pointage</h2>
-    <select id="nom">
+    <select id="nom" onchange="onChangeNom()">
       <option value="">Choisir votre nom</option>
       <option>Anaïs</option><option>Cloé</option><option>Delphine</option>
       <option>Elsa</option><option>Frédéric</option><option>Julia</option>
@@ -222,15 +223,17 @@ input[type="text"], input[type="date"], select {
       <option>Valentin</option><option>Véronique</option>
     </select>
     <input type="text" id="commentaire" placeholder="Commentaire (facultatif)">
-    <div>
-      <button class="btn-pointage debut" onclick="envoyer('debut')">Début du travail</button>
-      <button class="btn-pointage fin"   onclick="envoyer('fin')">Fin du travail</button>
+    <div class="pointage-grid">
+      <button class="btn-pointage debut" id="btn-debut-matin"  onclick="envoyer('debut_matin')">🌅 Début matinée</button>
+      <button class="btn-pointage fin"   id="btn-fin-matin"    onclick="envoyer('fin_matin')">🍽️ Fin matinée</button>
+      <button class="btn-pointage debut" id="btn-debut-aprem"  onclick="envoyer('debut_aprem')">🍽️ Début après-midi</button>
+      <button class="btn-pointage fin"   id="btn-fin-aprem"    onclick="envoyer('fin_aprem')">🌙 Fin après-midi</button>
     </div>
+    <div class="etat-jour" id="etat-jour"></div>
     <p id="message"></p>
     <div id="spinner" class="spinner"></div>
-    <div class="info-encadre">Si votre journée dépasse 7h de travail, un commentaire expliquant le motif est obligatoire avant de pointer la fin : il sera transmis à la direction pour validation.</div>
+    <div class="info-encadre">Si votre journée dépasse 7h de travail, un commentaire expliquant le motif est obligatoire avant de pointer la fin d'après-midi : il sera transmis à la direction pour validation.</div>
   </div>
-
   <!-- ══ MON COMPTE ════════════════════════════════════════ -->
   <div class="section" id="tab-compte">
     <h2>Mon compte</h2>
@@ -243,9 +246,7 @@ input[type="text"], input[type="date"], select {
     </select>
     <button class="btn-voir-solde" onclick="chargerCompte()">Voir mon compte</button>
     <div class="spinner-compte" id="spinner-compte"></div>
-
     <div id="compte-content" style="display:none">
-
       <!-- 1. Solde -->
       <div class="section-label" style="margin-top:18px">Solde de repos disponible</div>
       <div class="solde-bloc">
@@ -256,7 +257,6 @@ input[type="text"], input[type="date"], select {
         </div>
         <div class="solde-attente" id="solde-attente" style="display:none"></div>
       </div>
-
       <!-- 2. Utiliser mon solde -->
       <div class="section-label">Utiliser mon solde</div>
       <div class="form-bloc">
@@ -269,7 +269,6 @@ input[type="text"], input[type="date"], select {
             <span>💶</span>Demander le paiement
           </button>
         </div>
-
         <div id="bloc-recup">
           <span class="field-label">Date</span>
           <input type="date" id="date-recup" class="input-full">
@@ -279,7 +278,6 @@ input[type="text"], input[type="date"], select {
             <div><label>À</label><input type="time" id="heure-fin" oninput="majPreview()"></div>
           </div>
         </div>
-
         <div id="bloc-paiement" style="display:none">
           <span class="field-label">Durée à payer</span>
           <div class="duree-row">
@@ -287,40 +285,31 @@ input[type="text"], input[type="date"], select {
             <div><label>Minutes</label><input type="number" id="duree-m" min="0" max="59" value="0" oninput="majPreview()"></div>
           </div>
         </div>
-
         <div class="duree-preview" id="duree-preview"></div>
-
         <span class="field-label">Commentaire <span style="font-weight:normal">(facultatif)</span></span>
         <input type="text" id="comment-solde" class="input-full" placeholder="">
-
         <button class="btn-action" id="btn-valider" onclick="validerSolde()">Confirmer la récupération</button>
         <div class="msg-inline" id="msg-inline"></div>
         <div class="info-encadre">Cette demande sera soumise à la direction pour validation avant d'être déduite définitivement de votre solde.</div>
       </div>
-
       <!-- 3. Historique -->
       <div class="section-label">Historique d'utilisation</div>
       <div class="histo-liste" id="histo-liste">
         <div class="chargement">Chargement…</div>
       </div>
-
       <!-- 4. Mes semaines -->
       <div class="section-label">Mes semaines</div>
       <div class="semaines-scroll" id="semaines-scroll">
         <div class="chargement">Chargement…</div>
       </div>
-
     </div><!-- /compte-content -->
   </div>
-
 </div>
-
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMiy_L_kO86gWbsFamIA_nPYLqRPpdbmZpK8q7yAGIgaIxPfsv4du8VBWe_fD8PdxY/exec";
 let _soldeMin = 0;
 let _mode     = "recup";
 let _histoData = []; // pour retrouver les récup VALIDÉES par semaine
-
 // ── Tabs ───────────────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll(".tab-btn").forEach((b, i) =>
@@ -328,60 +317,115 @@ function switchTab(tab) {
   document.getElementById("tab-pointage").classList.toggle("active", tab === "pointage");
   document.getElementById("tab-compte").classList.toggle("active",   tab === "compte");
 }
-
 window.onload = () => {
   const saved = localStorage.getItem("nom");
   if (saved) {
     document.getElementById("nom").value        = saved;
     document.getElementById("nom-compte").value = saved;
+    rafraichirEtatJour(saved);
   }
   document.getElementById("date-recup").value = todayISO();
 };
 function todayISO() { return new Date().toISOString().split("T")[0]; }
-
-// ══ POINTAGE ══════════════════════════════════════════════════
-const SEUIL_COMMENTAIRE_OBLIGATOIRE_MIN = 7 * 60; // 7h (8h pointées - 1h pause)
-
+function onChangeNom() {
+  const nom = document.getElementById("nom").value;
+  if (nom) localStorage.setItem("nom", nom);
+  rafraichirEtatJour(nom);
+}
+// ══ POINTAGE (4 temps : début matinée / fin matinée / début après-midi / fin après-midi) ══
+// La pause déjeuner n'est plus soustraite automatiquement : elle correspond simplement
+// au temps écoulé entre "fin matinée" et "début après-midi", qui n'est jamais compté.
+const SEUIL_COMMENTAIRE_OBLIGATOIRE_MIN = 7 * 60; // 7h de travail effectif dans la journée
+// Calcule, à partir des pointages du jour déjà enregistrés, le temps de travail
+// effectif écoulé depuis ce matin (y compris le créneau en cours, non encore clôturé).
+function calcDureeJourEnCours(pointages) {
+  let total = 0, ouvert = null;
+  for (const p of pointages) {
+    if (p.type === "debut_matin" || p.type === "debut_aprem") {
+      ouvert = p.ts;
+    } else if (p.type === "fin_matin" || p.type === "fin_aprem") {
+      if (ouvert !== null) { total += (p.ts - ouvert); ouvert = null; }
+    }
+  }
+  if (ouvert !== null) total += (Date.now() - ouvert);
+  return Math.round(total / 60000);
+}
+async function rafraichirEtatJour(nom) {
+  if (!nom) { appliquerEtatBoutons(null); return; }
+  try {
+    const data = await fetchJSON(SCRIPT_URL + "?action=getPointagesJour&nom=" + enc(nom));
+    const pts = data.pointages || [];
+    const dernier = pts.length ? pts[pts.length - 1].type : null;
+    appliquerEtatBoutons(dernier);
+  } catch {
+    appliquerEtatBoutons(undefined); // erreur réseau : on ne bloque rien
+  }
+}
+function appliquerEtatBoutons(dernier) {
+  const ids = {
+    debut_matin_next: dernier === null || dernier === "fin_aprem" || dernier === undefined,
+    fin_matin_next:    dernier === "debut_matin" || dernier === undefined,
+    debut_aprem_next:  dernier === "fin_matin" || dernier === undefined,
+    fin_aprem_next:    dernier === "debut_aprem" || dernier === undefined,
+  };
+  document.getElementById("btn-debut-matin").disabled = !ids.debut_matin_next;
+  document.getElementById("btn-fin-matin").disabled   = !ids.fin_matin_next;
+  document.getElementById("btn-debut-aprem").disabled = !ids.debut_aprem_next;
+  document.getElementById("btn-fin-aprem").disabled   = !ids.fin_aprem_next;
+  const textes = {
+    null: "Vous n'avez pas encore pointé aujourd'hui.",
+    debut_matin: "Vous êtes en cours de matinée — pensez à pointer la fin de matinée.",
+    fin_matin: "Vous êtes en pause déjeuner — pointez le début d'après-midi à votre retour.",
+    debut_aprem: "Vous êtes en cours d'après-midi — pensez à pointer la fin d'après-midi.",
+    fin_aprem: "Votre journée est terminée.",
+  };
+  document.getElementById("etat-jour").textContent =
+    dernier === undefined ? "" : (textes[dernier] || "");
+}
 async function envoyer(type) {
   const nom         = document.getElementById("nom").value;
   const commentaire = document.getElementById("commentaire").value.trim();
   if (!nom) { alert("Choisissez votre nom"); return; }
-
-  // Si on pointe la fin, on vérifie la durée de la journée avant d'envoyer
-  if (type === "fin") {
+  const btns = document.querySelectorAll(".btn-pointage");
+  const spin = document.getElementById("spinner");
+  // Le spinner et le blocage des boutons s'affichent tout de suite,
+  // avant même la vérification réseau ci-dessous, pour que l'utilisateur
+  // comprenne immédiatement que son clic a été pris en compte.
+  btns.forEach(b => b.disabled = true);
+  spin.style.display = "block";
+  localStorage.setItem("nom", nom);
+  // Si on pointe une fin (matinée ou après-midi), on vérifie le total du jour
+  if (type === "fin_matin" || type === "fin_aprem") {
     try {
-      const data = await fetchJSON(SCRIPT_URL + "?action=getDernierDebut&nom=" + enc(nom));
-      if (data.ok && data.dernierDebut) {
-        const dureeMin = Math.round((Date.now() - data.dernierDebut) / 60000);
-        // On retire la pause d'1h si la durée brute la justifie (même règle que le calcul serveur)
-        const dureeNetteApprox = dureeMin > 5 * 60 ? dureeMin - 60 : dureeMin;
-        if (dureeNetteApprox > SEUIL_COMMENTAIRE_OBLIGATOIRE_MIN && !commentaire) {
-          affMsg("message", "⚠️ Vous avez dépassé 7h de travail aujourd'hui : merci de préciser le motif dans le commentaire avant de valider.");
-          document.getElementById("commentaire").focus();
-          return;
-        }
+      const data = await fetchJSON(SCRIPT_URL + "?action=getPointagesJour&nom=" + enc(nom));
+      const dureeMin = calcDureeJourEnCours(data.pointages || []);
+      if (dureeMin > SEUIL_COMMENTAIRE_OBLIGATOIRE_MIN && !commentaire) {
+        affMsg("message", "⚠️ Vous avez dépassé 7h de travail aujourd'hui : merci de préciser le motif dans le commentaire avant de valider.");
+        document.getElementById("commentaire").focus();
+        btns.forEach(b => b.disabled = false);
+        spin.style.display = "none";
+        return;
       }
     } catch {
       // En cas d'erreur réseau sur cette vérification, on laisse passer le pointage normalement
     }
   }
-
-  const btns = document.querySelectorAll(".btn-pointage");
-  const spin = document.getElementById("spinner");
-  btns.forEach(b => b.disabled = true); spin.style.display = "block";
-  localStorage.setItem("nom", nom);
+  const messages = {
+    debut_matin: `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bon travail ${nom} 😊</div>`,
+    fin_matin:   `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bon appétit ${nom} 🍽️</div>`,
+    debut_aprem: `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bon retour ${nom} 😊</div>`,
+    fin_aprem:   `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bonne soirée ${nom} 😁</div>`,
+  };
   fetch(SCRIPT_URL + "?action=pointage&nom=" + enc(nom)
     + "&type=" + enc(type) + "&commentaire=" + enc(commentaire))
     .then(() => {
-      affMsg("message", type === "debut"
-        ? `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bonne journée ${nom} 😊</div>`
-        : `<div>✅ Pointage enregistré</div><div style="margin-top:10px;color:#575756;font-weight:normal;">Bonne soirée ${nom} 😁</div>`);
+      affMsg("message", messages[type] || "✅ Pointage enregistré");
       document.getElementById("commentaire").value = "";
+      rafraichirEtatJour(nom);
     })
     .catch(() => affMsg("message", "❌ Erreur réseau"))
     .finally(() => { btns.forEach(b => b.disabled = false); spin.style.display = "none"; });
 }
-
 // ══ MON COMPTE ════════════════════════════════════════════════
 async function chargerCompte() {
   const nom = document.getElementById("nom-compte").value;
@@ -407,12 +451,10 @@ async function chargerCompte() {
     document.getElementById("spinner-compte").style.display = "none";
   }
 }
-
 function afficherSolde(data) {
   _soldeMin = data.soldeMin || 0;
   document.getElementById("solde-valeur").textContent = hhmm(_soldeMin);
   document.getElementById("solde-alerte").style.display = data.alerte ? "inline-block" : "none";
-
   const attenteEl = document.getElementById("solde-attente");
   const hasAttenteHS  = data.enAttenteHSH  && data.enAttenteHSH  !== "0h00";
   const hasAttenteMvt = data.enAttenteMvtH && data.enAttenteMvtH !== "0h00";
@@ -428,7 +470,6 @@ function afficherSolde(data) {
   }
   majPreview();
 }
-
 // ── Historique ─────────────────────────────────────────────────
 function afficherHistorique(lignes) {
   const el = document.getElementById("histo-liste");
@@ -455,15 +496,12 @@ function afficherHistorique(lignes) {
       </div>`;
   }).join("");
 }
-
 // ── Semaines ───────────────────────────────────────────────────
 function afficherSemaines(semaines) {
   const el = document.getElementById("semaines-scroll");
   if (semaines.length === 0) {
     el.innerHTML = '<div class="vide">Aucune semaine enregistrée.</div>'; return;
   }
-
-
   el.innerHTML = semaines.map(s => {
     const hasDep = s.depassementMin > 0;
     let badgeClass = "badge-ok", badgeTxt = "Régulier";
@@ -472,10 +510,6 @@ function afficherSemaines(semaines) {
       else if (s.statutHS === "REFUSE") { badgeClass = "badge-refuse"; badgeTxt = s.type + " refusé"; }
       else { badgeClass = "badge-attente"; badgeTxt = s.type + " · en attente"; }
     }
-
-    const recupMin = 0; // info récup maintenant affichée par jour directement
-    const recupNote = "";
-
     // Récup validées par date (format JJ/MM/AAAA) pour annoter les journées courtes
     const recupParJour = {};
     for (const h of _histoData) {
@@ -487,27 +521,25 @@ function afficherSemaines(semaines) {
       const mins = parseInt(parts[0]||0)*60 + parseInt(parts[1]||0);
       recupParJour[dateStr] = (recupParJour[dateStr] || 0) + mins;
     }
-
     const evts = s.evenements.map(ev => {
       const recupCeJour = recupParJour[ev.date] || 0;
       // ⚠️ seulement si journée courte ET pas de récup posée ce jour-là
       const showAlerte = ev.alerteJournee && recupCeJour === 0;
+      // La ligne "récup" n'utilise volontairement PAS la structure .event-row
+      // (pas de colonnes date / heure / durée alignées) : icône + libellé + durée
+      // regroupés ensemble, à gauche.
       const recupNote  = recupCeJour > 0
-        ? `<div class="event-row" style="border-bottom:none;padding-top:0">
-             <span class="event-date" style="color:#27ae60;font-style:italic">😴 récup</span>
-             <span class="event-heure"></span>
-             <span class="event-duree" style="color:#27ae60">${hhmm(recupCeJour)}</span>
-           </div>` : "";
+        ? `<div class="event-recup-row">😴 récup <span class="event-recup-duree">${hhmm(recupCeJour)}</span></div>`
+        : "";
       return `
       <div class="event-row">
         <span class="event-date">${ev.date}</span>
         <span class="event-heure">${ev.heure}</span>
-        <span class="event-duree">${showAlerte ? '<span class="event-alerte">⚠️ </span>' : ''}${ev.dureeH}${ev.pauseDeduite ? '<span class="event-pause">(-1h)</span>' : ''}</span>
+        <span class="event-duree">${showAlerte ? '<span class="event-alerte">⚠️ </span>' : ''}${ev.dureeH}</span>
       </div>
       ${ev.commentaire ? `<div class="event-comment">💬 ${ev.commentaire}</div>` : ""}
       ${recupNote}`;
     }).join("");
-
     return `
       <div class="semaine-card ${hasDep ? "has-dep" : ""}">
         <div class="card-header">
@@ -520,12 +552,10 @@ function afficherSemaines(semaines) {
           <div class="stat-item"><div class="stat-val stat-dep">+${s.depassementH}</div><div class="stat-lbl">dépassement</div></div>
           <div class="stat-item"><div class="stat-val">${s.reposBrutH}</div><div class="stat-lbl">repos correspondant</div></div>` : ""}
         </div>
-        ${recupNote}
         <div class="card-events">${evts}</div>
       </div>`;
   }).join("");
 }
-
 // ── Mode ────────────────────────────────────────────────────────
 function setMode(mode) {
   _mode = mode;
@@ -538,7 +568,6 @@ function setMode(mode) {
   document.getElementById("msg-inline").innerHTML = "";
   majPreview();
 }
-
 function getDureeMin() {
   if (_mode === "recup") {
     const d = document.getElementById("heure-debut").value;
@@ -554,7 +583,6 @@ function getDureeMin() {
     return h * 60 + m;
   }
 }
-
 function majPreview() {
   const dureeMin = getDureeMin();
   const el = document.getElementById("duree-preview");
@@ -566,12 +594,10 @@ function majPreview() {
     el.innerHTML = `Durée : <strong>${hhmm(dureeMin)}</strong> &nbsp;·&nbsp; Solde restant si validé : <span class="reste">${hhmm(restant)}</span>`;
   }
 }
-
 // ── Validation (soumission, pas validation finale) ─────────────
 async function validerSolde() {
   const nom = document.getElementById("nom-compte").value;
   if (!nom) { alert("Choisissez votre nom"); return; }
-
   const dureeMin = getDureeMin();
   if (dureeMin <= 0) {
     msgInline(_mode === "recup" ? "❌ Indiquez une plage horaire valide." : "❌ Indiquez une durée.", false);
@@ -581,11 +607,9 @@ async function validerSolde() {
     msgInline("❌ Durée supérieure au solde disponible (" + hhmm(_soldeMin) + ").", false);
     return;
   }
-
   const commentaire = document.getElementById("comment-solde").value.trim();
   const btn = document.getElementById("btn-valider");
   btn.disabled = true; btn.textContent = "Envoi…";
-
   try {
     let url;
     if (_mode === "recup") {
@@ -608,7 +632,6 @@ async function validerSolde() {
         + "&dureeM=" + m
         + "&commentaire=" + enc(commentaire);
     }
-
     const data = await fetchJSON(url);
     if (data.ok) {
       // Le solde validé ne change pas tout de suite : la demande est EN_ATTENTE.
@@ -620,11 +643,9 @@ async function validerSolde() {
       document.getElementById("comment-solde").value = "";
       document.getElementById("date-recup").value  = todayISO();
       document.getElementById("duree-preview").innerHTML = "";
-
       msgInline(_mode === "recup"
         ? "✅ Demande envoyée — en attente de validation par la direction"
         : "✅ Demande de paiement envoyée — en attente de validation", true);
-
       // Recharger solde (pour le bandeau "en attente") + historique
       const [soldeData, histData] = await Promise.all([
         fetchJSON(SCRIPT_URL + "?action=getSolde&nom="      + enc(nom)),
@@ -643,7 +664,6 @@ async function validerSolde() {
     btn.textContent = _mode === "recup" ? "Confirmer la récupération" : "Demander le paiement";
   }
 }
-
 // ── Utilitaires ────────────────────────────────────────────────
 function msgInline(msg, ok) {
   const el = document.getElementById("msg-inline");
