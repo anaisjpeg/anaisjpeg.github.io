@@ -250,10 +250,10 @@ input[type="text"], input[type="date"], select {
       <!-- 1. Solde -->
       <div class="section-label" style="margin-top:18px">Solde de repos disponible</div>
       <div class="solde-bloc">
-        <div class="solde-valeur" id="solde-valeur">—</div>
+        <div class="solde-valeur" id="solde-valeur">-</div>
         <div class="solde-unit">heures disponibles (validées)</div>
         <div class="solde-alerte" id="solde-alerte" style="display:none">
-          ⚠️ Seuil 7h atteint — à poser dans les 2 mois
+          ⚠️ Seuil 7h atteint - à poser dans les 2 mois
         </div>
         <div class="solde-attente" id="solde-attente" style="display:none"></div>
       </div>
@@ -374,9 +374,9 @@ function appliquerEtatBoutons(dernier) {
   document.getElementById("btn-fin-aprem").disabled   = !ids.fin_aprem_next;
   const textes = {
     null: "Vous n'avez pas encore pointé aujourd'hui.",
-    debut_matin: "Vous êtes en cours de matinée, pensez à pointer la fin de matinée.",
-    fin_matin: "Vous êtes en pause déjeuner, pointez en début d'après-midi à votre retour.",
-    debut_aprem: "Vous êtes en cours d'après-midi, pensez à pointer la fin d'après-midi.",
+    debut_matin: "Vous êtes en cours de matinée - pensez à pointer la fin de matinée.",
+    fin_matin: "Vous êtes en pause déjeuner - pointez le début d'après-midi à votre retour.",
+    debut_aprem: "Vous êtes en cours d'après-midi - pensez à pointer la fin d'après-midi.",
     fin_aprem: "Votre journée est terminée.",
   };
   document.getElementById("etat-jour").textContent =
@@ -644,8 +644,8 @@ async function validerSolde() {
       document.getElementById("date-recup").value  = todayISO();
       document.getElementById("duree-preview").innerHTML = "";
       msgInline(_mode === "recup"
-        ? "✅ Demande envoyée — en attente de validation par la direction"
-        : "✅ Demande de paiement envoyée — en attente de validation", true);
+        ? "✅ Demande envoyée - en attente de validation par la direction"
+        : "✅ Demande de paiement envoyée - en attente de validation", true);
       // Recharger solde (pour le bandeau "en attente") + historique
       const [soldeData, histData] = await Promise.all([
         fetchJSON(SCRIPT_URL + "?action=getSolde&nom="      + enc(nom)),
